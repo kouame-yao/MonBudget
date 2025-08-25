@@ -1,4 +1,11 @@
-import { FileQuestion, LogOut, Settings, User, Wallet } from "lucide-react";
+import {
+  FileQuestion,
+  LogOut,
+  Menu,
+  Settings,
+  User,
+  Wallet,
+} from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useAuth } from "../Auth/Authentification";
@@ -10,9 +17,9 @@ function Wrapper({ children }) {
   const [active, setActive] = useState(router.pathname);
   const [toggle, setToggle] = useState(false);
   const [ModalConnect, setModalConnect] = useState(false);
-  useEffect(() => {
-    setActive(router.pathname);
-  }, []);
+  const [mobileMenu, setMobileMenu] = useState(false);
+
+  useEffect(() => setActive(router.pathname), [router.pathname]);
 
   const btnNav = [
     { name: "Tableau de bord", href: "/dashboard" },
@@ -22,97 +29,108 @@ function Wrapper({ children }) {
     { name: "Se connecter" },
   ];
 
-  const affiche = () => {
-    setModalConnect(true);
-  };
-  const deconnextion = () => {
-    logout;
-  };
-  useEffect(() => {
-    if (loading) return;
-
-    if (!user && router.pathname !== "/") {
-      router.push("/");
+  const handleClick = (item, index) => {
+    if (index === 3) setToggle(!toggle);
+    else if (index === 4) setModalConnect(true);
+    else {
+      setActive(item.href);
+      router.push(item.href);
     }
+    setMobileMenu(false);
+  };
+
+  useEffect(() => {
+    if (!loading && !user && router.pathname !== "/") router.push("/");
   }, [loading, user, router]);
+
   return (
     <div>
-      <div>
-        <div className="flex relative justify-between px-45  bg-white p-8 shadow-md ">
-          <div className="flex place-items-center gap-4">
-            {" "}
-            <span className="bg-blue-600 w-12 h-12 place-items-center grid items-center text-white text-sm rounded-2xl">
-              <Wallet size={30} />
-            </span>
-            <span className=" text-4xl font-bold">MonBudjet</span>
-          </div>
+      <header className="flex justify-between items-center px-4 md:px-12 py-4 bg-white shadow-md relative">
+        <div className="flex items-center gap-4">
+          <span className="bg-blue-600 w-12 h-12 grid place-items-center text-white text-sm rounded-2xl">
+            <Wallet size={30} />
+          </span>
+          <span className="text-2xl md:text-4xl font-bold">MonBudjet</span>
+        </div>
 
-          <div className="flex cursor-pointer text-2xl font-light text-gray-500 gap-8 items-center ">
-            {btnNav.map((item, index) => {
-              if (loading && index === 4) {
-                return null;
-              }
-              const Active = router.pathname === item.href;
-              const classUser =
-                index === 3 &&
-                "bg-gray-200 cursor-pointer h-12 w-12 grid items-center place-items-center rounded-full";
-              return (
-                <div
-                  onClick={() => {
-                    if (index !== 3 && index !== 4) {
-                      setActive(item.href);
-                      router.push(item.href);
-                    }
-                    if (index === 3) {
-                      setToggle(!toggle);
-                    }
-                    if (index === 4) {
-                      affiche();
-                    }
-                  }}
-                  className={`${classUser} ${
-                    active === item.href ? "text-blue-500" : ""
-                  } ${index === 3 && !user && "hidden"} ${
-                    index === 4 && user && "hidden"
-                  } ${
-                    index === 4 && "bg-blue-500 p-4 rounded-2xl text-white"
-                  } `}
-                  key={index}
-                >
-                  {item.name}
-                </div>
-              );
-            })}
+        {/* Menu desktop */}
+        <div className="hidden md:flex items-center gap-6 text-gray-500 text-lg">
+          {btnNav.map((item, index) => {
+            if (loading && index === 4) return null;
+            const Active = router.pathname === item.href;
+            const classUser =
+              index === 3 &&
+              "bg-gray-200 h-10 w-10 grid place-items-center rounded-full";
+            return (
+              <div
+                key={index}
+                onClick={() => handleClick(item, index)}
+                className={`${classUser} ${Active ? "text-blue-500" : ""} ${
+                  index === 3 && !user ? "hidden" : ""
+                } ${index === 4 && user ? "hidden" : ""} ${
+                  index === 4 ? "bg-blue-500 p-2 rounded-2xl text-white" : ""
+                } cursor-pointer`}
+              >
+                {item.name}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bouton menu mobile */}
+        <div
+          className="md:hidden cursor-pointer"
+          onClick={() => setMobileMenu(!mobileMenu)}
+        >
+          <Menu size={28} />
+        </div>
+      </header>
+
+      {/* Menu mobile */}
+      {mobileMenu && (
+        <div className="absolute top-full right-0 w-64 bg-white shadow-lg rounded-b-2xl z-20 p-4 flex flex-col gap-3">
+          {btnNav.map((item, index) => (
+            <div
+              key={index}
+              onClick={() => handleClick(item, index)}
+              className={`p-2 rounded-lg cursor-pointer text-gray-700 ${
+                active === item.href ? "bg-blue-100 text-blue-600" : ""
+              }`}
+            >
+              {item.name}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Menu utilisateur dropdown */}
+      {toggle && (
+        <div className="absolute top-16 right-4 bg-white border border-gray-100 rounded-2xl shadow-2xl z-10 w-72">
+          <div className="border-b p-4 flex flex-col gap-1">
+            <span className="font-semibold">{user.displayName}</span>
+            <span className="text-gray-400 text-sm">{user.email}</span>
+          </div>
+          <div className="border-b text-gray-500 flex flex-col gap-2 p-4">
+            <span
+              onClick={() => router.push("/parametre")}
+              className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
+            >
+              <Settings /> Paramètre
+            </span>
+            <span className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer">
+              <FileQuestion /> Aide
+            </span>
+          </div>
+          <div
+            onClick={logout}
+            className="flex items-center gap-2 p-2 cursor-pointer text-red-500 hover:text-white hover:bg-red-500 rounded"
+          >
+            <LogOut /> Déconnexion
           </div>
         </div>
-        {toggle && (
-          <div className="bg-white z-10 absolute py-5 right-50 top-25 w-90  border border-gray-100 rounded-2xl shadow-2xl text-2xl">
-            <div className="border-b-4 border-gray-100 flex flex-col gap-2 px-4 py-4">
-              <span className="font-semibold">{user.displayName}</span>
-              <span className="text-gray-400">{user.email}</span>
-            </div>
-            <div className="border-b-4  border-gray-100 text-gray-400 flex flex-col gap-2 px-4 py-4">
-              <span
-                onClick={() => router.push("/parametre")}
-                className="flex hover:bg-gray-400 rounded-md hover:text-black p-2 cursor-pointer items-center gap-4"
-              >
-                <Settings /> Paramètre
-              </span>
-              <span className="flex  hover:bg-gray-400 rounded-md hover:text-black p-2 items-center gap-4 cursor-pointer ">
-                <FileQuestion /> Aide
-              </span>
-            </div>
-            <div
-              onClick={logout}
-              className="flex cursor-pointer hover:bg-red-400 hover:rounded-md mt-2 hover:text-white text-red-500 items-center gap-4 p-2"
-            >
-              <LogOut /> Déconnextion
-            </div>
-          </div>
-        )}
-      </div>
+      )}
 
-      <div className="px-45 mt-10">{children}</div>
+      <main className="px-4 md:px-12 mt-8">{children}</main>
       {ModalConnect && <Login_overlay Close={() => setModalConnect(false)} />}
     </div>
   );

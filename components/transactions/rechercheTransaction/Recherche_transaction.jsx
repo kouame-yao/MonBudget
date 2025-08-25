@@ -325,121 +325,106 @@ function Recherche_transaction() {
   };
   return (
     <main>
-      <div className="flex gap-4 mb-20">
-        <section
-          className="w-164 flex
-       flex-col gap-8"
-        >
-          <div className="bg-white flex flex-col gap-4 p-10 rounded-3xl border-4 border-gray-200 shadow-md">
-            <h1 className="text-4xl font-bold">Recherche</h1>
-            <div className="flex items-center w-full ">
+      <div className="flex gap-4 mb-10">
+        <section className="w-164 flex flex-col gap-4">
+          <div className="bg-white flex flex-col gap-2 p-4 rounded-2xl border border-gray-200 shadow-md">
+            <h1 className="text-2xl font-bold">Recherche</h1>
+            <div className="flex items-center w-full relative">
               <input
                 name="input"
                 value={InputSelectFilter.input}
                 onChange={handlechangeInputSelect}
                 placeholder="Recherche une transaction..."
                 type="text"
-                className="px-15 outline-none placeholder:text-gray-400 relative p-4 w-full placeholder: rounded-lg border-4 border-gray-200 text-2xl  "
+                className="px-4 outline-none placeholder:text-gray-400 p-2 w-full rounded-lg border border-gray-200 text-base"
               />
-              <span className="absolute px-5  text-gray-400  ">
-                <Search size={30} />
+              <span className="absolute right-2 text-gray-400">
+                <Search size={20} />
               </span>
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 bg-white p-10 rounded-3xl border-4 border-gray-200 shadow-md text-left">
-            <div className="text-3xl font-bold">Période</div>
-            {periode.map((items, index) => {
-              return (
-                <div key={index} className="flex items-center gap-8">
-                  <input
-                    checked={filter.periode === items.value}
-                    onChange={() => {
-                      handChange("periode", items.value);
-                    }}
-                    type="radio"
-                    className="scale-150"
-                  />
-                  <span className="text-2xl">{items.text}</span>
-                </div>
-              );
-            })}
+          <div className="flex flex-col gap-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-md text-left">
+            <div className="text-xl font-bold">Période</div>
+            {periode.map((items, index) => (
+              <div key={index} className="flex items-center gap-4">
+                <input
+                  checked={filter.periode === items.value}
+                  onChange={() => handChange("periode", items.value)}
+                  type="radio"
+                  className="scale-125"
+                />
+                <span className="text-base">{items.text}</span>
+              </div>
+            ))}
           </div>
 
-          <div className="flex flex-col gap-4 bg-white p-10 rounded-3xl border-4 border-gray-200 shadow-md text-left">
-            <div className="text-3xl font-bold">Type</div>
-            {Type.map((items, index) => {
-              return (
-                <div key={index} className="flex items-center gap-8">
-                  <input
-                    checked={filter.Type === items.value}
-                    onChange={() => {
-                      handChange("Type", items.value);
-                    }}
-                    type="radio"
-                    className="scale-150"
-                  />
-                  <span className="text-2xl">{items.text}</span>
-                </div>
-              );
-            })}
+          <div className="flex flex-col gap-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-md text-left">
+            <div className="text-xl font-bold">Type</div>
+            {Type.map((items, index) => (
+              <div key={index} className="flex items-center gap-4">
+                <input
+                  checked={filter.Type === items.value}
+                  onChange={() => handChange("Type", items.value)}
+                  type="radio"
+                  className="scale-125"
+                />
+                <span className="text-base">{items.text}</span>
+              </div>
+            ))}
           </div>
 
-          <div className="bg-white flex flex-col gap-4 p-10 rounded-3xl border-4 border-gray-200 shadow-md">
-            <h1 className="text-4xl font-bold">Catégories</h1>
+          <div className="bg-white flex flex-col gap-2 p-4 rounded-2xl border border-gray-200 shadow-md">
+            <h1 className="text-2xl font-bold">Catégories</h1>
             <select
               value={InputSelectFilter.select}
               onChange={handlechangeInputSelect}
-              className=" outline-none text-2xl border-4 border-gray-200 rounded-lg p-4 w-full"
+              className="outline-none text-base border border-gray-200 rounded-lg p-2 w-full"
               name="select"
-              id=""
             >
-              {Categories.map((items, index) => {
-                return (
-                  <option key={index} value={items.value}>
-                    {items.text}
-                  </option>
-                );
-              })}
+              {Categories.map((items, index) => (
+                <option key={index} value={items.value}>
+                  {items.text}
+                </option>
+              ))}
             </select>
           </div>
 
           <div>
             <button
               onClick={renitialisation}
-              className="cursor-pointer hover:text-white place-items-center justify-center font-semibold hover:bg-gray-400 hover:scale-105 text-2xl pla flex gap-4 items-center bg-gray-200 text-gray-500 p-4 w-full rounded-2xl"
+              className="cursor-pointer hover:text-white flex gap-2 items-center justify-center font-semibold hover:bg-gray-400 hover:scale-105 text-base bg-gray-200 text-gray-500 p-2 w-full rounded-xl"
             >
-              <RefreshCcw /> Rénitialiser les filtres
+              <RefreshCcw size={18} /> Rénitialiser les filtres
             </button>
           </div>
         </section>
 
         <section className="w-full">
-          <div className="bg-white flex flex-col gap-8 border-4 w-full border-gray-200 shadow-md rounded-3xl ">
-            <div className="flex justify-between items-center px-12 py-8">
-              <h1 className="text-4xl font-bold">
+          <div className="bg-white flex flex-col gap-4 border w-full border-gray-200 shadow-md rounded-2xl">
+            <div className="flex justify-between items-center px-4 py-4">
+              <h1 className="text-2xl font-bold">
                 Historique des transactions
               </h1>
-              <p className="text-2xl  text-gray-500">
+              <p className="text-base text-gray-500">
                 {transactionFilter?.length} transaction(s)
               </p>
             </div>
-            <div className="flex flex-col border-b-4 border-gray-200">
+            <div className="flex flex-col border-b border-gray-200">
               {StartItems?.map((items, index) => (
                 <div key={index} className="grid items-center relative">
-                  <div className="hover:bg-gray-300 cursor-pointer border-gray-200 border-t-4 px-4 md:px-12 py-6 md:py-8 flex justify-between items-center">
-                    <div className="flex gap-4 items-center">
-                      {/* Utilisation de l'icône et de la couleur de la catégorie */}
+                  <div className="hover:bg-gray-300 cursor-pointer border-gray-200 border-t px-2 py-2 flex justify-between items-center">
+                    <div className="flex gap-2 items-center">
                       {(() => {
                         const categoryInfo = categoriesWithIcons.find(
                           (category) => category.value === items.Categorie
                         ) || {
-                          icon: <BadgeDollarSign size={24} />,
+                          icon: <BadgeDollarSign size={16} />,
                           color: "#9ca3af",
                         };
                         return (
                           <span
-                            className="w-12 h-12 rounded-2xl grid justify-center items-center"
+                            className="w-8 h-8 rounded-xl grid justify-center items-center"
                             style={{
                               backgroundColor: `${categoryInfo.color}40`,
                             }}
@@ -451,26 +436,23 @@ function Recherche_transaction() {
                         );
                       })()}
                       <div className="flex flex-col gap-1">
-                        <span className="text-lg md:text-2xl font-semibold">
+                        <span className="text-sm font-semibold">
                           {items.Description}
                         </span>
-                        <span className="text-sm md:text-xl font-light text-gray-500">
+                        <span className="text-xs font-light text-gray-500">
                           {items.Categorie} •{" "}
                           {items.Date_at?.toDate
                             ? items.Date_at.toDate().toLocaleDateString(
                                 "fr-FR",
-                                {
-                                  day: "numeric",
-                                  month: "short",
-                                }
+                                { day: "numeric", month: "short" }
                               )
                             : "1 déc."}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <span
-                        className={`text-xl md:text-3xl ${
+                        className={`text-sm ${
                           items.Type === "Dépense"
                             ? "text-red-500"
                             : "text-green-500"
@@ -484,74 +466,68 @@ function Recherche_transaction() {
                           setElement(index);
                           setToggle(!toggle);
                         }}
-                        className="cursor-pointer hover:bg-gray-400 w-10 h-10 rounded-md grid justify-center items-center"
+                        className="cursor-pointer hover:bg-gray-400 w-8 h-8 rounded-md grid justify-center items-center"
                       >
-                        <EllipsisVertical size={24} />
+                        <EllipsisVertical size={16} />
                       </button>
                     </div>
                   </div>
+
                   {element === index && toggle && (
-                    <div className="bg-white absolute right-4 md:right-10 z-10 top-16 md:top-20 text-base md:text-2xl w-56 md:w-70 flex flex-col gap-2 rounded-2xl py-2 border-2 border-gray-200 shadow-lg">
+                    <div className="bg-white absolute right-2 z-10 top-12 text-sm w-56 flex flex-col gap-1 rounded-xl py-1 border border-gray-200 shadow-lg">
                       <span
                         onClick={() => {
                           setActive(!active);
                           itemsModifie(items.id);
                           setIdItems(items.id);
                         }}
-                        className="flex text-gray-500 font-light hover:bg-gray-200 py-2 px-2 cursor-pointer items-center gap-4"
+                        className="flex text-gray-500 font-light hover:bg-gray-200 py-1 px-2 cursor-pointer items-center gap-2"
                       >
-                        <Pen size={18} color="gray" /> Modifier
+                        <Pen size={16} color="gray" /> Modifier
                       </span>
                       <span
                         onClick={() => {
                           supprimerDonner(items.id);
                         }}
-                        className="flex text-red-500 hover:bg-red-200 py-2 px-2 cursor-pointer items-center gap-4"
+                        className="flex text-red-500 hover:bg-red-200 py-1 px-2 cursor-pointer items-center gap-2"
                       >
-                        <Trash size={18} color="red" /> Supprimer
+                        <Trash size={16} color="red" /> Supprimer
                       </span>
                     </div>
                   )}
                 </div>
               ))}
             </div>
-            <div className="flex justify-between items-center py-8 px-6">
-              <div className="text-2xl text-gray-400">
+
+            <div className="flex justify-between items-center py-4 px-2 text-sm">
+              <div className="text-gray-400">
                 Page {currentPage} sur {totalPage}
               </div>
-              <div className="flex items-center gap-8">
+              <div className="flex items-center gap-2">
                 <button
                   disabled={currentPage === 1}
-                  onClick={() => {
-                    ToggglePage(currentPage - 1);
-                  }}
-                  className="bg-gray-400 w-12 h-12 place-items-center rounded-2xl disabled:opacity-50 transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer"
+                  onClick={() => ToggglePage(currentPage - 1)}
+                  className="bg-gray-400 w-8 h-8 rounded-xl disabled:opacity-50 hover:scale-105 transition"
                 >
                   <ChevronLeft />
                 </button>
-                {Array.from({ length: totalPage }, (_, i) => {
-                  return (
-                    <button
-                      key={i + 1}
-                      onClick={() => {
-                        ToggglePage(i + 1);
-                      }}
-                      className={`${
-                        currentPage === i + 1
-                          ? "bg-blue-700 text-white"
-                          : "bg-white"
-                      } w-12 h-12 text-2xl rounded-2xl disabled:opacity-50 transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer`}
-                    >
-                      {i + 1}
-                    </button>
-                  );
-                })}
+                {Array.from({ length: totalPage }, (_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => ToggglePage(i + 1)}
+                    className={`w-8 h-8 text-sm rounded-xl ${
+                      currentPage === i + 1
+                        ? "bg-blue-700 text-white"
+                        : "bg-white"
+                    } hover:scale-105 transition`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
                 <button
                   disabled={currentPage === totalPage}
-                  onClick={() => {
-                    ToggglePage(currentPage + 1);
-                  }}
-                  className="bg-gray-400 w-12 h-12 place-items-center rounded-2xl disabled:opacity-50 transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer"
+                  onClick={() => ToggglePage(currentPage + 1)}
+                  className="bg-gray-400 w-8 h-8 rounded-xl disabled:opacity-50 hover:scale-105 transition"
                 >
                   <ChevronRight />
                 </button>
@@ -560,119 +536,109 @@ function Recherche_transaction() {
           </div>
         </section>
 
-        {/* Modal Modifie */}
-      </div>
-
-      {active && (
-        <section className="fixed top-0 left-0 w-full h-screen bg-black/50 flex justify-center items-center z-50">
-          <div className="bg-white p-8 w-full max-w-2xl flex flex-col gap-8 shadow-md rounded-3xl border-4 border-gray-200 overflow-y-auto max-h-[90vh]">
-            <span className="text-4xl font-semibold">Ajout rapide</span>
-            <div className="bg-gray-300 cursor-pointer rounded-2xl p-2 w-full flex justify-between items-center gap-4 ">
-              {btn.map((items, index) => {
-                return (
+        {active && (
+          <section className="fixed top-0 left-0 w-full h-screen bg-black/50 flex justify-center items-center z-50">
+            <div className="bg-white p-4 w-full max-w-2xl flex flex-col gap-4 shadow-md rounded-2xl border border-gray-200 overflow-y-auto max-h-[90vh]">
+              <span className="text-2xl font-semibold">Ajout rapide</span>
+              <div className="bg-gray-300 cursor-pointer rounded-xl p-2 w-full flex justify-between items-center gap-2">
+                {btn.map((items, index) => (
                   <button
-                    onClick={() => {
-                      setTogglebtn(items.name);
-                    }}
+                    onClick={() => setTogglebtn(items.name)}
                     key={index}
                     className={`${items.color} ${
-                      togglebtn === items.name ? "bg-white rounded-lg p-4" : ""
-                    } text-2xl flex items-center gap-4 w-full justify-center cursor-pointer transition-all duration-300 hover:scale-100`}
+                      togglebtn === items.name ? "bg-white rounded-lg p-2" : ""
+                    } text-base flex items-center gap-2 w-full justify-center cursor-pointer transition-all`}
                   >
-                    {" "}
-                    {items.icon} {items.name}{" "}
+                    {items.icon} {items.name}
                   </button>
-                );
-              })}
-            </div>
+                ))}
+              </div>
 
-            <div className="flex flex-col gap-4">
-              <label className="flex flex-col gap-4" htmlFor="">
-                <span className="text-2xl">Montant</span>
-                <input
-                  value={inputValue.montant}
-                  name="montant"
-                  onChange={handleChange}
-                  placeholder="0.00"
-                  type="number"
-                  className="border-4 placeholder:text-2xl text-2xl border-gray-300 p-5 w-full rounded-2xl outline-none focus:border-blue-300"
-                />
-              </label>
-              <label className="flex flex-col gap-4" htmlFor="">
-                <span className="text-2xl">Description</span>
-                <input
-                  value={inputValue.description}
-                  name="description"
-                  onChange={handleChange}
-                  placeholder="Ex: Courses du matin"
-                  type="text"
-                  className="border-4 placeholder:text-2xl text-2xl border-gray-300 p-5 w-full rounded-2xl outline-none focus:border-blue-300"
-                />
-              </label>
-              <label className="flex flex-col gap-4" htmlFor="">
-                <span className="text-2xl">Catégorie</span>
-                <select
-                  value={inputValue.categorie}
-                  onChange={handleChange}
-                  className="border-4 placeholder:text-2xl text-2xl border-gray-300 p-5 w-full rounded-2xl outline-none focus:border-blue-300"
-                  name="categorie"
-                  id=""
-                >
-                  <option value="">Choisir la catégorie</option>;
-                  {Categories?.map((items, index) => {
-                    return (
+              <div className="flex flex-col gap-2">
+                <label className="flex flex-col gap-2">
+                  <span className="text-base">Montant</span>
+                  <input
+                    value={inputValue.montant}
+                    name="montant"
+                    onChange={handleChange}
+                    placeholder="0.00"
+                    type="number"
+                    className="border border-gray-300 p-2 w-full rounded-xl outline-none focus:border-blue-300 text-base"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-2">
+                  <span className="text-base">Description</span>
+                  <input
+                    value={inputValue.description}
+                    name="description"
+                    onChange={handleChange}
+                    placeholder="Ex: Courses du matin"
+                    type="text"
+                    className="border border-gray-300 p-2 w-full rounded-xl outline-none focus:border-blue-300 text-base"
+                  />
+                </label>
+
+                <label className="flex flex-col gap-2">
+                  <span className="text-base">Catégorie</span>
+                  <select
+                    value={inputValue.categorie}
+                    onChange={handleChange}
+                    className="border border-gray-300 p-2 w-full rounded-xl outline-none focus:border-blue-300 text-base"
+                    name="categorie"
+                  >
+                    <option value="">Choisir la catégorie</option>
+                    {Categories?.map((items, index) => (
                       <option key={index} value={items.text}>
-                        {items.text}{" "}
+                        {items.text}
                       </option>
-                    );
-                  })}
-                </select>
-              </label>
+                    ))}
+                  </select>
+                </label>
 
-              <label className="flex flex-col gap-4" htmlFor="">
-                <span className="text-2xl">Date</span>
-                <input
-                  value={inputValue.Date}
-                  name="Date"
-                  onChange={handleChange}
-                  placeholder="Ex: Courses du matin"
-                  type="date"
-                  className="border-4 placeholder:text-2xl  text-2xl border-gray-300 p-5 w-full rounded-2xl outline-none focus:border-blue-300"
-                />
-              </label>
-            </div>
+                <label className="flex flex-col gap-2">
+                  <span className="text-base">Date</span>
+                  <input
+                    value={inputValue.Date}
+                    name="Date"
+                    onChange={handleChange}
+                    type="date"
+                    className="border border-gray-300 p-2 w-full rounded-xl outline-none focus:border-blue-300 text-base"
+                  />
+                </label>
+              </div>
 
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setActive(false)}
-                className="text-2xl p-4 cursor-pointer font-semibold rounded-2xl w-full grid justify-center border-4 border-gray-200  "
-              >
-                Annuler
-              </button>
-              <div
-                onClick={editeElement}
-                className={`w-full ${
-                  togglebtn === "Dépense" ? "bg-red-500" : "bg-green-500"
-                } text-white font-semibold grid justify-center items-center rounded-2xl p-5 cursor-pointer`}
-              >
-                <button className="text-2xl flex items-center gap-8 cursor-pointer">
-                  {loadings ? (
-                    <div className="flex items-center gap-4">
-                      <div className=" animate-spin  rounded-full border-b-transparent border-4 p-4 border-violet-400 "></div>
-                      <div>Chargement...</div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-4">
-                      <Save size={30} />
-                      Sauvegarder
-                    </div>
-                  )}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActive(false)}
+                  className="text-base p-2 cursor-pointer font-semibold rounded-xl w-full grid justify-center border border-gray-200"
+                >
+                  Annuler
                 </button>
+                <div
+                  onClick={editeElement}
+                  className={`w-full ${
+                    togglebtn === "Dépense" ? "bg-red-500" : "bg-green-500"
+                  } text-white font-semibold grid justify-center items-center rounded-xl p-2 cursor-pointer`}
+                >
+                  <button className="text-base flex items-center gap-2 cursor-pointer">
+                    {loadings ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full border-b-transparent border-2 p-2 border-violet-400"></div>
+                        Chargement...
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Save size={20} /> Sauvegarder
+                      </div>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
+      </div>
     </main>
   );
 }

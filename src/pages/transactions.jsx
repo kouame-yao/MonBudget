@@ -11,19 +11,20 @@ function transactions() {
     <Wrapper>
       <main className="flex flex-col gap-10">
         <section className="flex justify-between items-center">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-5xl font-bold">Transactions</h1>
-            <p className="text-3xl font-light text-gray-700">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-bold">Transactions</h1>
+            <p className="text-base font-light text-gray-700">
               Gérez et consultez l'historique de vos transactions
             </p>
           </div>
           <div
             onClick={() => setModal(!false)}
-            className="text-3xl p-5 px-6 cursor-pointer text-white flex items-center gap-4 rounded-lg bg-blue-500"
+            className="text-base p-2 px-3 cursor-pointer text-white flex items-center gap-2 rounded-lg bg-blue-500"
           >
-            <Plus /> Nouvelle transaction
+            <Plus size={16} /> Nouvelle transaction
           </div>
         </section>
+
         <section className="flex flex-col gap-10">
           <Vue_Transactions />
           <Recherche_transaction />

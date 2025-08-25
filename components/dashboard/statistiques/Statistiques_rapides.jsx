@@ -12,15 +12,13 @@ export default function Statistiques_rapides() {
   const formatted = date.toLocaleDateString("fr-FR", options);
 
   useEffect(() => {
-    if (loading) {
-      return;
-    }
+    if (loading) return;
+
     const colRef = collection(db, "users", uid, "transactions");
     const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
       const table = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        // Assurer que Montant est un nombre
         const montant =
           typeof data.Montant === "string"
             ? parseFloat(data.Montant)
@@ -29,6 +27,7 @@ export default function Statistiques_rapides() {
       });
       setTransaction(table);
     });
+
     return () => unsubscribe();
   }, [formatted, uid]);
 
@@ -55,16 +54,12 @@ export default function Statistiques_rapides() {
   const TauxEparge =
     Revenu > 0 ? Math.round((SoldeActuelle / Revenu) * 100) : 0;
 
-  // Moyenne journalière des dépenses
   const MoyenneJournaliere = Depense > 0 ? Depense / 30 : 0;
-
-  // Plus grosse dépense
   const GrosseDepense =
     TypeTrans.Dépense.length > 0
       ? Math.max(...TypeTrans.Dépense.map((t) => t.Montant || 0))
       : 0;
 
-  // Transaction avec le montant le plus élevé
   const maxTransaction =
     TypeTrans.Dépense.length > 0
       ? TypeTrans.Dépense.reduce(
@@ -96,19 +91,21 @@ export default function Statistiques_rapides() {
   ];
 
   return (
-    <div>
-      <div className="bg-white rounded-3xl border-2 flex flex-col gap-6 border-gray-200 shadow-md p-6 md:p-8">
-        <span className="text-3xl md:text-4xl font-semibold">
+    <div className="px-4">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-md p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-6">
+        <span className="text-xl sm:text-2xl md:text-3xl font-semibold">
           Statistiques rapides
         </span>
-        <div className="flex flex-col gap-4 md:gap-6">
+
+        <div className="flex flex-col gap-3 sm:gap-4">
           {states.map((items, index) => (
-            <div key={index} className="flex justify-between items-center">
-              <span className="text-lg md:text-2xl font-light">
-                {items.text}
-              </span>
+            <div
+              key={index}
+              className="flex justify-between items-center text-sm sm:text-base md:text-lg"
+            >
+              <span className="font-light">{items.text}</span>
               <span
-                className={`text-lg md:text-2xl font-semibold ${
+                className={`font-semibold ${
                   index === 0 || index === 1
                     ? "text-red-600"
                     : index === 3

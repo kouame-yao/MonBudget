@@ -22,32 +22,22 @@ export default function YearlyTrendsChart() {
   const [savingRate, setSavingRate] = useState([]);
   const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  useEffect(() => setIsClient(true), []);
 
-  // Récupérer toutes les transactions de l'utilisateur
   useEffect(() => {
     if (!isClient || !user?.uid) return;
-
     const colRef = collection(db, "users", user.uid, "transactions");
     const q = query(colRef, orderBy("Date_at", "asc"));
-
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const allTransactions = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setTransactions(allTransactions);
+      setTransactions(
+        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      );
     });
-
     return () => unsubscribe();
   }, [isClient, user?.uid]);
 
-  // Grouper par mois
   useEffect(() => {
     if (transactions.length === 0) return;
-
     const monthlyMap = {};
     transactions.forEach((t) => {
       const date = t.Date_at?.toDate ? t.Date_at.toDate() : new Date(t.Date_at);
@@ -55,17 +45,14 @@ export default function YearlyTrendsChart() {
         month: "short",
         year: "numeric",
       });
-
       if (!monthlyMap[monthYear])
         monthlyMap[monthYear] = { revenus: 0, depenses: 0 };
-
       const montant =
         typeof t.Montant === "string" ? parseFloat(t.Montant) : t.Montant;
       if (t.Type === "Revenu") monthlyMap[monthYear].revenus += montant;
       else if (t.Type === "Dépense") monthlyMap[monthYear].depenses += montant;
     });
 
-    // Ordre des mois pour l'affichage
     const monthsOrder = [
       "janv. 2025",
       "févr. 2025",
@@ -92,13 +79,13 @@ export default function YearlyTrendsChart() {
       };
     });
 
-    const rate = data.map((d) => ({
-      month: d.month,
-      taux: d.revenus > 0 ? Math.round((d.epargne / d.revenus) * 100) : 0,
-    }));
-
     setMonthlyData(data);
-    setSavingRate(rate);
+    setSavingRate(
+      data.map((d) => ({
+        month: d.month,
+        taux: d.revenus > 0 ? Math.round((d.epargne / d.revenus) * 100) : 0,
+      }))
+    );
   }, [transactions]);
 
   const totalEpargne = monthlyData.reduce((sum, m) => sum + m.epargne, 0);
@@ -107,20 +94,20 @@ export default function YearlyTrendsChart() {
       (sum, m) => sum + (m.revenus > 0 ? (m.epargne / m.revenus) * 100 : 0),
       0
     ) / monthlyData.length || 0;
-  const improvement = 15; // valeur fixe à adapter
+  const improvement = 15; // valeur fixe
 
-  if (!isClient || monthlyData.length === 0) {
+  if (!isClient || monthlyData.length === 0)
     return <div>Chargement des données...</div>;
-  }
 
   return (
-    <div className="bg-white shadow rounded-2xl p-4">
-      <h2 className="text-3xl font-semibold">Tendances annuelles</h2>
-      <p className="text-2xl text-gray-500 mb-4">
+    <div className="bg-white shadow rounded-xl p-3">
+      <h2 className="text-xl font-semibold">Tendances annuelles</h2>
+      <p className="text-sm text-gray-500 mb-2">
         Évolution de vos finances sur 12 mois
       </p>
-      <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-4">
-        <ResponsiveContainer width="100%" height={400}>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <ResponsiveContainer width="100%" height={250}>
           <BarChart data={monthlyData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
@@ -132,7 +119,8 @@ export default function YearlyTrendsChart() {
             <Bar dataKey="epargne" fill="#3b82f6" name="Épargne" />
           </BarChart>
         </ResponsiveContainer>
-        <ResponsiveContainer width="100%" height={400}>
+
+        <ResponsiveContainer width="100%" height={250}>
           <LineChart data={savingRate}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
@@ -148,18 +136,19 @@ export default function YearlyTrendsChart() {
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 text-center">
-        <div className="bg-green-100 rounded-xl py-4 font-bold text-green-700">
-          <span className="text-4xl">{totalEpargne.toFixed(0)}€</span> <br />
-          <span className="text-3xl font-normal">Épargne totale</span>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 text-center">
+        <div className="bg-green-100 rounded-xl py-2 font-bold text-green-700">
+          <span className="text-2xl">{totalEpargne.toFixed(0)}€</span> <br />
+          <span className="text-base font-normal">Épargne totale</span>
         </div>
-        <div className="bg-blue-100 rounded-xl py-4 font-bold text-blue-700">
-          <span className="text-4xl">{avgTaux.toFixed(0)}% </span> <br />
-          <span className="text-3xl font-normal">Taux d'épargne moyen</span>
+        <div className="bg-blue-100 rounded-xl py-2 font-bold text-blue-700">
+          <span className="text-2xl">{avgTaux.toFixed(0)}%</span> <br />
+          <span className="text-base font-normal">Taux d'épargne moyen</span>
         </div>
-        <div className="bg-purple-100 rounded-xl py-4 font-bold text-purple-700">
-          <span className="text-4xl">+{improvement}%</span> <br />
-          <span className="text-3xl font-normal">
+        <div className="bg-purple-100 rounded-xl py-2 font-bold text-purple-700">
+          <span className="text-2xl">+{improvement}%</span> <br />
+          <span className="text-base font-normal">
             Amélioration vs. année précédente
           </span>
         </div>

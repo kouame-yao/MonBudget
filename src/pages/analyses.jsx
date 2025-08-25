@@ -9,15 +9,18 @@ export default function analyses() {
   return (
     <Wrapper>
       <main className="flex flex-col gap-10 mb-20">
-        <section className="flex justify-between items-center">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-5xl font-bold">Analyses financières</h1>
-            <p className="text-3xl font-light text-gray-700">
+        <section className="flex justify-between items-center mb-4">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold">
+              Analyses financières
+            </h1>
+            <p className="text-sm md:text-base text-gray-700">
               Analysez vos habitudes de dépenses et suivez vos progrès
               financiers
             </p>
           </div>
         </section>
+
         <section>
           <Analayse_taux />
         </section>

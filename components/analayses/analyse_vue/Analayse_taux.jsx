@@ -92,25 +92,25 @@ function Analayse_taux() {
 
   const Statique = [
     {
-      name: <PiggyBank size={40} />,
+      name: <PiggyBank size={20} />,
       solde: `${TauxEpargne}%`,
       text: "Taux d'épargne",
       trend: "up",
     },
     {
-      name: <BadgeEuro size={40} />,
+      name: <BadgeEuro size={20} />,
       solde: `${MoyenneJournaliere} €`,
       text: "Dépense moyenne/jour",
       trend: "down",
     },
     {
-      name: <Utensils size={40} />,
+      name: <Utensils size={20} />,
       solde: maxTransaction.Categorie || "N/A",
       text: "Plus grosse catégorie",
       trend: null,
     },
     {
-      name: <HandCoins size={40} />,
+      name: <HandCoins size={20} />,
       solde:
         Revenu > 0 ? `${Math.round((SoldeActuelle / Revenu) * 100)}%` : "0%",
       text: "Objectif du mois",
@@ -119,18 +119,18 @@ function Analayse_taux() {
   ];
 
   return (
-    <div className="flex gap-4 items-center flex-wrap">
+    <div className="flex gap-2 items-center flex-wrap">
       {Statique.map((items, index) => (
         <div
           key={index}
-          className="bg-white flex flex-col gap-4 w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)] rounded-3xl p-6 border-2 border-gray-200 shadow-sm"
+          className="bg-white flex flex-col gap-2 w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)] rounded-2xl p-3 border border-gray-200 shadow-sm"
         >
           <div className="flex items-center justify-between">
-            <span className="w-16 h-16 rounded-2xl grid place-items-center p-2 bg-gray-100">
+            <span className="w-10 h-10 rounded-xl grid place-items-center p-1 bg-gray-100">
               {items.name}
             </span>
             <span
-              className={`text-xl ${
+              className={`text-base ${
                 items.trend === "up"
                   ? "text-green-500"
                   : items.trend === "down"
@@ -139,14 +139,14 @@ function Analayse_taux() {
               }`}
             >
               {items.trend === "up" ? (
-                <ArrowUp />
+                <ArrowUp size={14} />
               ) : items.trend === "down" ? (
-                <ArrowDown />
+                <ArrowDown size={14} />
               ) : null}
             </span>
           </div>
-          <span className="text-3xl font-bold">{items.solde}</span>
-          <span className="text-lg font-light text-gray-500">{items.text}</span>
+          <span className="text-xl font-bold">{items.solde}</span>
+          <span className="text-sm font-light text-gray-500">{items.text}</span>
         </div>
       ))}
     </div>
