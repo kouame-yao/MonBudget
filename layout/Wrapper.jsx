@@ -88,7 +88,7 @@ function Wrapper({ children }) {
 
       {/* Menu mobile */}
       {mobileMenu && (
-        <div className="absolute top-full right-0 w-64 bg-white shadow-lg rounded-b-2xl z-20 p-4 flex flex-col gap-3">
+        <div className="fixed top-16 right-0 w-64 bg-white shadow-lg rounded-b-2xl z-20 p-4 flex flex-col gap-3 max-h-[calc(100vh-4rem)] overflow-y-auto">
           {btnNav.map((item, index) => (
             <div
               key={index}

@@ -24,7 +24,7 @@ export default function analyses() {
         <section>
           <Analayse_taux />
         </section>
-        <section className="flex gap-8 w-full">
+        <section className="grid md:flex gap-8 w-full">
           <DailyFlowChart />
           <CategoryPieChart />
         </section>

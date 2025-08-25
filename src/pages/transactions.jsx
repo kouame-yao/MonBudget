@@ -25,19 +25,18 @@ function transactions() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-10">
+        <section className="flex flex-col gap-6 md:gap-10 px-4 md:px-12">
           <Vue_Transactions />
           <Recherche_transaction />
         </section>
+
         {modal && (
-          <section className=" fixed top-0 left-0  grid justify-center h-screen items-center w-full bg-black/50 ">
-            <div className="w-160 bg-white p-8 rounded-2xl ">
+          <section className="fixed inset-0 grid place-items-center bg-black/50 z-50 px-4">
+            <div className="w-full max-w-2xl bg-white p-6 md:p-8 rounded-2xl">
               <Ajout_rapide />
               <button
-                onClick={() => {
-                  setModal(false);
-                }}
-                className="border-4 hover:bg-gray-200 hover:shadow-lg border-gray-200 text-3xl p-4 w-full place-items-center mt-8 rounded-2xl cursor-pointer"
+                onClick={() => setModal(false)}
+                className="border-2 md:border-4 hover:bg-gray-200 hover:shadow-lg border-gray-200 text-xl md:text-3xl p-3 md:p-4 w-full mt-6 md:mt-8 rounded-2xl cursor-pointer"
               >
                 Annuler
               </button>

@@ -324,9 +324,10 @@ function Recherche_transaction() {
     }
   };
   return (
-    <main>
-      <div className="flex gap-4 mb-10">
-        <section className="w-164 flex flex-col gap-4">
+    <main className="px-4 md:px-12">
+      <div className="flex flex-col md:flex-row gap-4 mb-10">
+        {/* FILTRES */}
+        <section className="w-full md:w-80 flex flex-col gap-4">
           <div className="bg-white flex flex-col gap-2 p-4 rounded-2xl border border-gray-200 shadow-md">
             <h1 className="text-2xl font-bold">Recherche</h1>
             <div className="flex items-center w-full relative">
@@ -344,7 +345,7 @@ function Recherche_transaction() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-md text-left">
+          <div className="flex flex-col gap-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-md">
             <div className="text-xl font-bold">Période</div>
             {periode.map((items, index) => (
               <div key={index} className="flex items-center gap-4">
@@ -359,7 +360,7 @@ function Recherche_transaction() {
             ))}
           </div>
 
-          <div className="flex flex-col gap-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-md text-left">
+          <div className="flex flex-col gap-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-md">
             <div className="text-xl font-bold">Type</div>
             {Type.map((items, index) => (
               <div key={index} className="flex items-center gap-4">
@@ -400,9 +401,10 @@ function Recherche_transaction() {
           </div>
         </section>
 
+        {/* HISTORIQUE DES TRANSACTIONS */}
         <section className="w-full">
           <div className="bg-white flex flex-col gap-4 border w-full border-gray-200 shadow-md rounded-2xl">
-            <div className="flex justify-between items-center px-4 py-4">
+            <div className="flex justify-between items-center px-4 py-4 flex-wrap gap-2">
               <h1 className="text-2xl font-bold">
                 Historique des transactions
               </h1>
@@ -410,21 +412,22 @@ function Recherche_transaction() {
                 {transactionFilter?.length} transaction(s)
               </p>
             </div>
+
             <div className="flex flex-col border-b border-gray-200">
               {StartItems?.map((items, index) => (
                 <div key={index} className="grid items-center relative">
-                  <div className="hover:bg-gray-300 cursor-pointer border-gray-200 border-t px-2 py-2 flex justify-between items-center">
-                    <div className="flex gap-2 items-center">
+                  <div className="hover:bg-gray-300 cursor-pointer border-gray-200 border-t px-2 py-2 flex justify-between items-center flex-wrap gap-2">
+                    <div className="flex gap-2 items-center flex-1 min-w-0">
                       {(() => {
                         const categoryInfo = categoriesWithIcons.find(
-                          (category) => category.value === items.Categorie
+                          (c) => c.value === items.Categorie
                         ) || {
                           icon: <BadgeDollarSign size={16} />,
                           color: "#9ca3af",
                         };
                         return (
                           <span
-                            className="w-8 h-8 rounded-xl grid justify-center items-center"
+                            className="w-8 h-8 rounded-xl grid justify-center items-center shrink-0"
                             style={{
                               backgroundColor: `${categoryInfo.color}40`,
                             }}
@@ -435,22 +438,25 @@ function Recherche_transaction() {
                           </span>
                         );
                       })()}
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm font-semibold">
+                      <div className="flex flex-col gap-1 truncate">
+                        <span className="text-sm font-semibold truncate">
                           {items.Description}
                         </span>
-                        <span className="text-xs font-light text-gray-500">
+                        <span className="text-xs font-light text-gray-500 truncate">
                           {items.Categorie} •{" "}
                           {items.Date_at?.toDate
                             ? items.Date_at.toDate().toLocaleDateString(
                                 "fr-FR",
-                                { day: "numeric", month: "short" }
+                                {
+                                  day: "numeric",
+                                  month: "short",
+                                }
                               )
                             : "1 déc."}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       <span
                         className={`text-sm ${
                           items.Type === "Dépense"
@@ -486,9 +492,7 @@ function Recherche_transaction() {
                         <Pen size={16} color="gray" /> Modifier
                       </span>
                       <span
-                        onClick={() => {
-                          supprimerDonner(items.id);
-                        }}
+                        onClick={() => supprimerDonner(items.id)}
                         className="flex text-red-500 hover:bg-red-200 py-1 px-2 cursor-pointer items-center gap-2"
                       >
                         <Trash size={16} color="red" /> Supprimer
@@ -499,11 +503,12 @@ function Recherche_transaction() {
               ))}
             </div>
 
-            <div className="flex justify-between items-center py-4 px-2 text-sm">
+            {/* Pagination */}
+            <div className="flex justify-between items-center py-4 px-2 text-sm flex-wrap gap-2">
               <div className="text-gray-400">
                 Page {currentPage} sur {totalPage}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   disabled={currentPage === 1}
                   onClick={() => ToggglePage(currentPage - 1)}
@@ -536,18 +541,19 @@ function Recherche_transaction() {
           </div>
         </section>
 
+        {/* MODAL AJOUT RAPIDE */}
         {active && (
-          <section className="fixed top-0 left-0 w-full h-screen bg-black/50 flex justify-center items-center z-50">
+          <section className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 px-4">
             <div className="bg-white p-4 w-full max-w-2xl flex flex-col gap-4 shadow-md rounded-2xl border border-gray-200 overflow-y-auto max-h-[90vh]">
               <span className="text-2xl font-semibold">Ajout rapide</span>
-              <div className="bg-gray-300 cursor-pointer rounded-xl p-2 w-full flex justify-between items-center gap-2">
+              <div className="bg-gray-300 cursor-pointer rounded-xl p-2 w-full flex justify-between items-center gap-2 flex-wrap">
                 {btn.map((items, index) => (
                   <button
                     onClick={() => setTogglebtn(items.name)}
                     key={index}
                     className={`${items.color} ${
                       togglebtn === items.name ? "bg-white rounded-lg p-2" : ""
-                    } text-base flex items-center gap-2 w-full justify-center cursor-pointer transition-all`}
+                    } text-base flex items-center gap-2 w-full md:w-auto justify-center cursor-pointer transition-all`}
                   >
                     {items.icon} {items.name}
                   </button>
@@ -555,6 +561,7 @@ function Recherche_transaction() {
               </div>
 
               <div className="flex flex-col gap-2">
+                {/* Montant */}
                 <label className="flex flex-col gap-2">
                   <span className="text-base">Montant</span>
                   <input
@@ -566,6 +573,8 @@ function Recherche_transaction() {
                     className="border border-gray-300 p-2 w-full rounded-xl outline-none focus:border-blue-300 text-base"
                   />
                 </label>
+
+                {/* Description */}
 
                 <label className="flex flex-col gap-2">
                   <span className="text-base">Description</span>
@@ -579,6 +588,7 @@ function Recherche_transaction() {
                   />
                 </label>
 
+                {/* Catégorie */}
                 <label className="flex flex-col gap-2">
                   <span className="text-base">Catégorie</span>
                   <select
@@ -596,6 +606,7 @@ function Recherche_transaction() {
                   </select>
                 </label>
 
+                {/* Date */}
                 <label className="flex flex-col gap-2">
                   <span className="text-base">Date</span>
                   <input
@@ -608,20 +619,22 @@ function Recherche_transaction() {
                 </label>
               </div>
 
-              <div className="flex items-center gap-2">
+              {/* Boutons Annuler / Sauvegarder */}
+              <div className="flex flex-col md:flex-row items-center gap-2 mt-4">
                 <button
                   onClick={() => setActive(false)}
-                  className="text-base p-2 cursor-pointer font-semibold rounded-xl w-full grid justify-center border border-gray-200"
+                  className="text-base p-2 cursor-pointer font-semibold rounded-xl w-full md:w-1/2 grid justify-center border border-gray-200"
                 >
                   Annuler
                 </button>
+
                 <div
                   onClick={editeElement}
-                  className={`w-full ${
+                  className={`w-full md:w-1/2 ${
                     togglebtn === "Dépense" ? "bg-red-500" : "bg-green-500"
                   } text-white font-semibold grid justify-center items-center rounded-xl p-2 cursor-pointer`}
                 >
-                  <button className="text-base flex items-center gap-2 cursor-pointer">
+                  <button className="text-base flex items-center gap-2 cursor-pointer w-full justify-center">
                     {loadings ? (
                       <div className="flex items-center gap-2">
                         <div className="animate-spin rounded-full border-b-transparent border-2 p-2 border-violet-400"></div>
