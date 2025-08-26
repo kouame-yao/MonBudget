@@ -2,7 +2,7 @@ import { Trophy } from "lucide-react";
 
 export default function Objectif_Epargne() {
   return (
-    <div className="w-full max-w-sm md:max-w-md mx-auto p-2 sm:p-3 md:p-4">
+    <div className="w-full max-w-sm md:max-w-md mx-auto ">
       <div className="bg-blue-500 text-white p-3 sm:p-4 md:p-5 shadow-md rounded-xl flex flex-col gap-3 sm:gap-4 md:gap-5">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 sm:gap-2 md:gap-3">
           <span className="text-lg sm:text-xl md:text-2xl font-semibold">

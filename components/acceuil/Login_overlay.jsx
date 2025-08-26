@@ -8,13 +8,13 @@ function Login_overlay({ Close }) {
   const { user, connectGoogle, logout } = useAuth();
 
   return (
-    <div className="fixed w-screen flex flex-col justify-center items-center h-screen z-10 top-0 right-0 bg-black/50">
-      <div className="bg-white rounded-2xl w-150 py-4 grid gap-10">
+    <div className="fixed px-2 w-screen flex flex-col justify-center items-center h-screen z-10 top-0 right-0 bg-black/50">
+      <div className="bg-white rounded-2xl md:w-150 w-full py-4 grid gap-10">
         <div className="p-4 flex justify-between w-full border-b-2 px-8 border-gray-200 ">
-          <span className="font-bold text-2xl">Connextion</span>
+          <span className="font-bold md:text-lg sm:text-sm">Connextion</span>
           <span
             onClick={Close}
-            className="text-ld font-semibold text-gray-500 cursor-pointer"
+            className="md:text-lg sm:text-sm font-semibold text-gray-500 cursor-pointer"
           >
             X
           </span>
@@ -24,25 +24,23 @@ function Login_overlay({ Close }) {
           <span className="grid justify-center  items-center w-18 h-18 bg-blue-400 text-white rounded-2xl">
             <Wallet size={40} />
           </span>
-          <span className="text-3xl font-semibold">
+          <span className="md:text-lg sm:text-sm font-semibold">
             Bienvenue sur MonBudget
           </span>
-          <span className="text-lg font-light text-gray-500">
+          <span className="md:text-lg sm:text-sm font-light text-center whitespace-pre-line text-gray-500">
             Connectez-vous pour gérer vos finances personnelles
           </span>
           <span
             onClick={connectGoogle}
-            className="border-2 p-4 hover:bg-gray-200 place-items-center flex justify-center font-semibold cursor-pointer rounded-2xl w-full text-2xl border-gray-200"
+            className="border-2 p-4 hover:bg-gray-200 place-items-center flex justify-center font-semibold cursor-pointer rounded-2xl w-full md:text-lg sm:text-sm border-gray-200"
           >
             <span>Continuer avec google</span>
           </span>
-          <div className=" grid justify-center place-items-center text-gray-500 font-light ">
+          <div className=" text-center whitespace-pre-line text-gray-500 font-light md:text-lg sm:text-sm ">
             <span>
               En vous connectant, vous acceptez nos conditions d'utilisation et
-              notre{" "}
+              notre politique de confidentialité.
             </span>
-
-            <span>politique de confidentialité.</span>
           </div>
         </div>
       </div>

@@ -10,16 +10,16 @@ function transactions() {
   return (
     <Wrapper>
       <main className="flex flex-col gap-10">
-        <section className="flex justify-between items-center">
+        <section className="flex  justify-between items-center">
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold">Transactions</h1>
-            <p className="text-base font-light text-gray-700">
+            <p className="text-sm font-light  text-gray-700">
               Gérez et consultez l'historique de vos transactions
             </p>
           </div>
           <div
             onClick={() => setModal(!false)}
-            className="text-base p-2 px-3 cursor-pointer text-white flex items-center gap-2 rounded-lg bg-blue-500"
+            className="md:text-base text-sm  md:p-2 px-3 cursor-pointer text-white flex items-center gap-2 rounded-lg bg-blue-500"
           >
             <Plus size={16} /> Nouvelle transaction
           </div>
@@ -32,14 +32,22 @@ function transactions() {
 
         {modal && (
           <section className="fixed inset-0 grid place-items-center bg-black/50 z-50 px-4">
-            <div className="w-full max-w-2xl bg-white p-6 md:p-8 rounded-2xl">
-              <Ajout_rapide />
-              <button
+            <div className="w-full max-w-2xl bg-white py-4 px-2 md:p-8 rounded-2xl">
+              <span
                 onClick={() => setModal(false)}
-                className="border-2 md:border-4 hover:bg-gray-200 hover:shadow-lg border-gray-200 text-xl md:text-3xl p-3 md:p-4 w-full mt-6 md:mt-8 rounded-2xl cursor-pointer"
+                className="place-items-end grid px-6 text-lg"
               >
-                Annuler
-              </button>
+                x
+              </span>
+              <Ajout_rapide />
+              <div className="px-6">
+                <button
+                  onClick={() => setModal(false)}
+                  className="border-2 md:border-4 place-items-center hover:bg-gray-200 hover:shadow-lg border-gray-200 text-sm md:text-3xl p-2 md:p-4 w-full mt-4 md:mt-4 rounded-2xl cursor-pointer"
+                >
+                  Annuler
+                </button>
+              </div>
             </div>
           </section>
         )}

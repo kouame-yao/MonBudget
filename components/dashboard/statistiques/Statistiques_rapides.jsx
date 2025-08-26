@@ -91,7 +91,7 @@ export default function Statistiques_rapides() {
   ];
 
   return (
-    <div className="px-4">
+    <div className="">
       <div className="bg-white rounded-2xl border border-gray-200 shadow-md p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-6">
         <span className="text-xl sm:text-2xl md:text-3xl font-semibold">
           Statistiques rapides

@@ -7,7 +7,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../Auth/Authentification";
 import Login_overlay from "../components/acceuil/Login_overlay";
 
@@ -18,9 +18,23 @@ function Wrapper({ children }) {
   const [toggle, setToggle] = useState(false);
   const [ModalConnect, setModalConnect] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const divRef = useRef(null);
 
   useEffect(() => setActive(router.pathname), [router.pathname]);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // Si on clique en dehors de la div
+      if (divRef.current && !divRef.current.contains(event.target)) {
+        setMobileMenu(false);
+        setToggle(false);
+      }
+    }
 
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const btnNav = [
     { name: "Tableau de bord", href: "/dashboard" },
     { name: "Transactions", href: "/transactions" },
@@ -88,27 +102,38 @@ function Wrapper({ children }) {
 
       {/* Menu mobile */}
       {mobileMenu && (
-        <div className="fixed top-16 right-0 w-64 bg-white shadow-lg rounded-b-2xl z-20 p-4 flex flex-col gap-3 max-h-[calc(100vh-4rem)] overflow-y-auto">
-          {btnNav.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => handleClick(item, index)}
-              className={`p-2 rounded-lg cursor-pointer text-gray-700 ${
-                active === item.href ? "bg-blue-100 text-blue-600" : ""
-              }`}
-            >
-              {item.name}
-            </div>
-          ))}
+        <div
+          ref={divRef}
+          className="fixed top-16 right-0 w-64 bg-white shadow-lg rounded-b-2xl z-20 p-4 flex flex-col gap-3 max-h-[calc(100vh-4rem)] overflow-y-auto"
+        >
+          {btnNav.map((item, index) => {
+            const afiche = index !== 4 && !user && "hidden";
+            const masc = index === 4 && user && "hidden";
+
+            return (
+              <div
+                key={index}
+                onClick={() => handleClick(item, index)}
+                className={`p-2 rounded-lg cursor-pointer text-gray-700 ${
+                  active === item.href ? "bg-blue-100 text-blue-600" : ""
+                }${afiche} ${masc} `}
+              >
+                {item.name}
+              </div>
+            );
+          })}
         </div>
       )}
 
       {/* Menu utilisateur dropdown */}
-      {toggle && (
-        <div className="absolute top-16 right-4 bg-white border border-gray-100 rounded-2xl shadow-2xl z-10 w-72">
+      {toggle && !mobileMenu && (
+        <div
+          ref={divRef}
+          className="absolute top-16 right-4 bg-white border border-gray-100 rounded-2xl shadow-2xl z-10 w-72"
+        >
           <div className="border-b p-4 flex flex-col gap-1">
-            <span className="font-semibold">{user.displayName}</span>
-            <span className="text-gray-400 text-sm">{user.email}</span>
+            <span className="font-semibold">{user?.displayName}</span>
+            <span className="text-gray-400 text-sm">{user?.email}</span>
           </div>
           <div className="border-b text-gray-500 flex flex-col gap-2 p-4">
             <span

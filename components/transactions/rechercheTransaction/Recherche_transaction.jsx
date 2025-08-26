@@ -84,6 +84,7 @@ function Recherche_transaction() {
     { text: "Loisirs", value: "Loisirs" },
     { text: "Santé", value: "Santé" },
     { text: "Shopping", value: "Shopping" },
+    { text: "Factures", value: "Factures" },
     { text: "Salaire", value: "Salaire" },
     { text: "Epargne", value: "Epargne" },
     { text: "Inverstissement", value: "Inverstissement" },
@@ -324,10 +325,10 @@ function Recherche_transaction() {
     }
   };
   return (
-    <main className="px-4 md:px-12">
+    <main className=" w-full">
       <div className="flex flex-col md:flex-row gap-4 mb-10">
         {/* FILTRES */}
-        <section className="w-full md:w-80 flex flex-col gap-4">
+        <section className="w-full md:w-112 flex flex-col gap-4">
           <div className="bg-white flex flex-col gap-2 p-4 rounded-2xl border border-gray-200 shadow-md">
             <h1 className="text-2xl font-bold">Recherche</h1>
             <div className="flex items-center w-full relative">

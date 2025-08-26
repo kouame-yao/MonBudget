@@ -84,7 +84,7 @@ export default function Donne_mensuelle() {
   ];
 
   return (
-    <div className="px-2 sm:px-4 md:px-6">
+    <div className="">
       <div className="bg-white p-3 sm:p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm">
         <div className="flex flex-col md:flex-row justify-between items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
