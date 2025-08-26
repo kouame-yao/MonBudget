@@ -31,19 +31,19 @@ function transactions() {
         </section>
 
         {modal && (
-          <section className="fixed inset-0 grid place-items-center bg-black/50 z-50 px-4">
-            <div className="w-full max-w-2xl bg-white py-4 px-2 md:p-8 rounded-2xl">
+          <section className="fixed inset-0 grid place-items-center bg-black/50 z-50 px-4 ">
+            <div className="w-full max-w-2xl bg-white py-4 px-2 md:p-8 rounded-2xl md:w-120 ">
               <span
                 onClick={() => setModal(false)}
-                className="place-items-end grid px-6 text-lg"
+                className="place-items-end grid px-6 text-lg cursor-pointer md:mb-4"
               >
                 x
               </span>
               <Ajout_rapide />
-              <div className="px-6">
+              <div className="px-6 md:p-0">
                 <button
                   onClick={() => setModal(false)}
-                  className="border-2 md:border-4 place-items-center hover:bg-gray-200 hover:shadow-lg border-gray-200 text-sm md:text-3xl p-2 md:p-4 w-full mt-4 md:mt-4 rounded-2xl cursor-pointer"
+                  className="border-2 md:border-4 place-items-center hover:bg-gray-200 hover:shadow-lg border-gray-200 text-sm md:text-lg p-2 md:p-4 w-full mt-4 md:mt-4 rounded-2xl cursor-pointer"
                 >
                   Annuler
                 </button>

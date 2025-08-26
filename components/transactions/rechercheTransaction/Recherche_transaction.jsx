@@ -29,10 +29,9 @@ import {
   TrendingUp,
   Utensils,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { db } from "../../../database/firebase/auth";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../Auth/Authentification";
+import { db } from "../../../database/firebase/auth";
 function Recherche_transaction() {
   const { user, connectGoogle, logout, loading } = useAuth();
   const uid = user?.uid;
@@ -58,6 +57,21 @@ function Recherche_transaction() {
   });
   const [active, setActive] = useState(false);
   const [idItems, setIdItems] = useState(null);
+  const divRef = useRef(null);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // Si on clique en dehors de la div
+      if (divRef.current && !divRef.current.contains(event.target)) {
+        setToggle(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const today = new Date();
   const mois = today.getMonth() + 1;
   const trimestre = Math.ceil(mois / 3);
@@ -481,7 +495,10 @@ function Recherche_transaction() {
                   </div>
 
                   {element === index && toggle && (
-                    <div className="bg-white absolute right-2 z-10 top-12 text-sm w-56 flex flex-col gap-1 rounded-xl py-1 border border-gray-200 shadow-lg">
+                    <div
+                      ref={divRef}
+                      className="bg-white absolute right-2 z-10 top-12 text-sm w-56 flex flex-col gap-1 rounded-xl py-1 border border-gray-200 shadow-lg"
+                    >
                       <span
                         onClick={() => {
                           setActive(!active);
@@ -545,16 +562,21 @@ function Recherche_transaction() {
         {/* MODAL AJOUT RAPIDE */}
         {active && (
           <section className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 px-4">
-            <div className="bg-white p-4 w-full max-w-2xl flex flex-col gap-4 shadow-md rounded-2xl border border-gray-200 overflow-y-auto max-h-[90vh]">
-              <span className="text-2xl font-semibold">Ajout rapide</span>
-              <div className="bg-gray-300 cursor-pointer rounded-xl p-2 w-full flex justify-between items-center gap-2 flex-wrap">
+            <div className="bg-white p-4 w-full md:w-112 max-w-2xl flex flex-col gap-4 shadow-md rounded-2xl border border-gray-200 overflow-y-auto max-h-[90vh]">
+              <div className="flex justify-between items-center cursor-pointer">
+                <span className="text-2xl font-semibold">Ajout rapide</span>
+                <span onClick={() => setActive(false)} className="md:text-2xl">
+                  x
+                </span>
+              </div>
+              <div className="bg-gray-300 cursor-pointer rounded-xl p-2 w-full flex justify-between md:flex-nowrap items-center gap-2 ">
                 {btn.map((items, index) => (
                   <button
                     onClick={() => setTogglebtn(items.name)}
                     key={index}
                     className={`${items.color} ${
                       togglebtn === items.name ? "bg-white rounded-lg p-2" : ""
-                    } text-base flex items-center gap-2 w-full md:w-auto justify-center cursor-pointer transition-all`}
+                    } text-base flex items-center gap-2 w-full md:w-full justify-center  cursor-pointer transition-all`}
                   >
                     {items.icon} {items.name}
                   </button>
