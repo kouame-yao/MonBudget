@@ -1,11 +1,11 @@
 import { collection, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { db } from "../../../database/firebase/auth";
 import { useAuth } from "../../../Auth/Authentification";
+import { db } from "../../../database/firebase/auth";
 
 export default function Statistiques_rapides() {
   const { user, connectGoogle, logout, loading } = useAuth();
-  const uid = user?.uid;
+
   const [transactions, setTransaction] = useState([]);
   const date = new Date();
   const options = { year: "numeric", month: "long" };
@@ -13,8 +13,8 @@ export default function Statistiques_rapides() {
 
   useEffect(() => {
     if (loading) return;
-
-    const colRef = collection(db, "users", uid, "transactions");
+    if (!user) return;
+    const colRef = collection(db, "users", user?.uid, "transactions");
     const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
       const table = [];
       querySnapshot.forEach((doc) => {
@@ -29,7 +29,7 @@ export default function Statistiques_rapides() {
     });
 
     return () => unsubscribe();
-  }, [formatted, uid]);
+  }, [formatted, user?.uid]);
 
   const TypeTransactio = (data) => {
     const compte = { Dépense: [], Revenu: [] };

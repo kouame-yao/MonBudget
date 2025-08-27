@@ -1,16 +1,14 @@
-import React from "react";
 import {
-  ChevronRight,
-  TrendingUp,
-  Shield,
-  Users,
   BarChart3,
+  ChevronRight,
   PiggyBank,
-  Target,
   Smartphone,
+  TrendingUp,
 } from "lucide-react";
+import { useAuth } from "../../Auth/Authentification";
 
 function Acceuil() {
+  const { connectGoogle } = useAuth();
   return (
     <div>
       <section className="relative overflow-hidden pt-16 pb-16">
@@ -47,10 +45,16 @@ function Acceuil() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-blue-600 text-white px-6 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all duration-200 flex items-center justify-center shadow-lg">
+                <button
+                  onClick={() => connectGoogle()}
+                  className="bg-blue-600 text-white px-6 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all duration-200 flex items-center justify-center shadow-lg"
+                >
                   📊 Démarrer gratuitement
                 </button>
-                <button className="border-2 border-gray-300 text-gray-700 px-6 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:shadow-lg transition-all duration-200 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+                <button
+                  onClick={() => connectGoogle()}
+                  className="border-2 border-gray-300 text-gray-700 px-6 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:shadow-lg transition-all duration-200 flex items-center justify-center bg-white/80 backdrop-blur-sm"
+                >
                   👁️ Voir la démo
                 </button>
               </div>
@@ -239,7 +243,10 @@ function Acceuil() {
             Commencez dès aujourd'hui et découvrez comment MonBudget peut vous
             aider à atteindre vos objectifs financiers.
           </p>
-          <button className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors">
+          <button
+            onClick={() => connectGoogle()}
+            className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
             Créer mon compte gratuitement
           </button>
         </div>

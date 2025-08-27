@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../../../Auth/Authentification";
 import { db } from "../../../database/firebase/auth";
+import { toast } from "sonner";
 
 export default function Ajout_rapide() {
   const { user } = useAuth();
@@ -51,8 +52,11 @@ export default function Ajout_rapide() {
       !inputValue.montant ||
       !inputValue.description ||
       !inputValue.categorie
-    )
+    ) {
+      toast.error("Des champs sont manquants !");
       return;
+    }
+
     setLoading(true);
     try {
       const usercRef = doc(collection(db, "users", uid, "transactions"));
@@ -64,9 +68,10 @@ export default function Ajout_rapide() {
         Date_at: new Date(),
         Mois: formatted,
       });
+      toast.success(`${togglebtn} ajouter avec succès`);
       setInputValue({ montant: "", description: "", categorie: "" });
     } catch (e) {
-      console.error("Error adding document: ", e.message);
+      toast.error("Error adding document: ", e.message);
     } finally {
       setLoading(false);
     }

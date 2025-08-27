@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
+import { toast } from "sonner";
 import { auth, db } from "../database/firebase/auth";
 
 const AuthContext = createContext();
@@ -51,6 +52,7 @@ export const AuthProvider = ({ children }) => {
         { merge: true } // merge = true => update si le doc existe déjà
       );
       setUser(user);
+      toast.success("Vous êtes connecté !");
       router.push("/dashboard"); // met à jour le contexte
     } catch (error) {
       console.error("Erreur connexion Google :", error);
@@ -59,9 +61,11 @@ export const AuthProvider = ({ children }) => {
 
   // Fonction pour se déconnecter
   const logout = async () => {
-    await signOut(auth);
-    setUser(null);
     router.push("/");
+    await signOut(auth);
+
+    setUser(null);
+    toast.success("Vous êtes déconnecter !");
   };
 
   return (

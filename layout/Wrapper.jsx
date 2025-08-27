@@ -8,12 +8,16 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "../Auth/Authentification";
 import Login_overlay from "../components/acceuil/Login_overlay";
 
 function Wrapper({ children }) {
   const { user, connectGoogle, logout, loading } = useAuth();
   const router = useRouter();
+  useEffect(() => {
+    if (!loading && !user && router.pathname !== "/") router.push("/");
+  }, [loading, user, router]);
   const [active, setActive] = useState(router.pathname);
   const [toggle, setToggle] = useState(false);
   const [ModalConnect, setModalConnect] = useState(false);
@@ -53,10 +57,6 @@ function Wrapper({ children }) {
     setMobileMenu(false);
   };
 
-  useEffect(() => {
-    if (!loading && !user && router.pathname !== "/") router.push("/");
-  }, [loading, user, router]);
-
   return (
     <div>
       <header className="flex justify-between items-center px-4 md:px-12 py-4 bg-white shadow-md relative">
@@ -82,7 +82,10 @@ function Wrapper({ children }) {
                 className={`${classUser} ${Active ? "text-blue-500" : ""} ${
                   index === 3 && !user ? "hidden" : ""
                 } ${index === 4 && user ? "hidden" : ""} ${
-                  index === 4 ? "bg-blue-500 p-2 rounded-2xl text-white" : ""
+                  index !== 4 && !user && "hidden"
+                } ${
+                  index === 4 &&
+                  "bg-blue-500 p-2 rounded-lg px-4 text-white shadow-lg active:scale-105 "
                 } cursor-pointer`}
               >
                 {item.name}
@@ -147,7 +150,7 @@ function Wrapper({ children }) {
             </span>
           </div>
           <div
-            onClick={logout}
+            onClick={() => logout()}
             className="flex items-center gap-2 p-2 cursor-pointer text-red-500 hover:text-white hover:bg-red-500 rounded"
           >
             <LogOut /> Déconnexion

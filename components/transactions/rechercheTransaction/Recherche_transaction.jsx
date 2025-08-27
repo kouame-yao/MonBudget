@@ -32,6 +32,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../Auth/Authentification";
 import { db } from "../../../database/firebase/auth";
+import { toast } from "sonner";
 function Recherche_transaction() {
   const { user, connectGoogle, logout, loading } = useAuth();
   const uid = user?.uid;
@@ -195,6 +196,7 @@ function Recherche_transaction() {
   const formatted = date.toLocaleDateString("fr-FR", options);
   useEffect(() => {
     if (loading) return;
+    if (!user) return;
     const colRef = collection(db, "users", uid, "transactions");
 
     // écoute en temps réel
@@ -302,7 +304,8 @@ function Recherche_transaction() {
       !inputValue.categorie
     ) {
       setLoading(false);
-      console.log("Veillez remplir tout les champs");
+      toast.warning("Veillez remplir tout les champs");
+
       return;
     }
     try {
@@ -317,9 +320,10 @@ function Recherche_transaction() {
         Date_at: timestamp,
       });
       setLoading(false);
-      console.log("update reussi");
+      toast.success("Modification reussi");
     } catch (error) {
-      console.log(error);
+      toast.error(error.error);
+
       setLoading(false);
     }
   };
@@ -333,9 +337,9 @@ function Recherche_transaction() {
       const washingtonRef = doc(db, "users", uid, "transactions", id);
 
       await deleteDoc(washingtonRef);
-      console.log("Element a l:id:", idItems);
+      toast.success("Suppression reussi");
     } catch (error) {
-      console.log(error);
+      toast.error(error.error);
     }
   };
   return (
