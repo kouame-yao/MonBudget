@@ -251,13 +251,13 @@ function Recherche_transaction() {
     const dateObj = element.Date_at
       ? new Date(element.Date_at.seconds * 1000)
       : null;
+    setTogglebtn(element.Type);
     setInputValue({
       description: element.Description,
       montant: element.Montant,
       categorie: element.Categorie?.trim() || "",
       Date: dateObj ? dateObj.toISOString().substring(0, 10) : "",
     });
-    console.log(element);
   };
 
   const editeElement = async () => {

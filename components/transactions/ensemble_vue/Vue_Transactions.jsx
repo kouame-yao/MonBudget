@@ -22,6 +22,75 @@ export default function Vue_Transactions() {
   const Revenu = CalculeTotal(TypeTrans.Revenu);
   const SoldeActuelle = Revenu - Depense;
 
+  // calcule taux revenu
+
+  const calculateMonthlyEvolution = (transactions) => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const currentYear = now.getFullYear();
+    const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+    let revenusActuels = 0;
+    let revenusPrecedents = 0;
+    let depensesActuelles = 0;
+    let depensesPrecedentes = 0;
+
+    transactions.forEach((t) => {
+      const d = t.Date_at?.seconds
+        ? new Date(t.Date_at.seconds * 1000)
+        : new Date(t.Date_at);
+
+      if (t.Type === "Revenu") {
+        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+          revenusActuels += t.Montant || 0;
+        } else if (
+          d.getMonth() === previousMonth &&
+          d.getFullYear() === previousYear
+        ) {
+          revenusPrecedents += t.Montant || 0;
+        }
+      } else if (t.Type === "Dépense") {
+        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+          depensesActuelles += t.Montant || 0;
+        } else if (
+          d.getMonth() === previousMonth &&
+          d.getFullYear() === previousYear
+        ) {
+          depensesPrecedentes += t.Montant || 0;
+        }
+      }
+    });
+
+    const evolutionRevenus =
+      revenusPrecedents === 0
+        ? revenusActuels > 0
+          ? 100
+          : 0
+        : ((revenusActuels - revenusPrecedents) / revenusPrecedents) * 100;
+
+    const evolutionDepenses =
+      depensesPrecedentes === 0
+        ? depensesActuelles > 0
+          ? 100
+          : 0
+        : ((depensesActuelles - depensesPrecedentes) / depensesPrecedentes) *
+          100;
+
+    return {
+      revenus: {
+        actuels: revenusActuels,
+        precedents: revenusPrecedents,
+        evolution: evolutionRevenus,
+      },
+      depenses: {
+        actuelles: depensesActuelles,
+        precedentes: depensesPrecedentes,
+        evolution: evolutionDepenses,
+      },
+    };
+  };
+  const resultats = calculateMonthlyEvolution(Get_transactions);
   const Statique = [
     {
       name: "Total",
@@ -36,14 +105,14 @@ export default function Vue_Transactions() {
     {
       name: "Revenus",
       solde: Revenu > 0 ? `+ ${Revenu.toFixed(2)} Fr` : "Aucun revenu",
-      text: "+12% vs mois dernier",
+      text: `${resultats.revenus.evolution.toFixed(2)}% vs mois dernier`,
       icon: <ArrowUp size={16} />,
       color: "text-green-500",
     },
     {
       name: "Dépenses",
       solde: Depense > 0 ? `- ${Depense.toFixed(2)} Fr` : "Aucune dépense",
-      text: "-8% vs mois dernier",
+      text: `${resultats.depenses.evolution.toFixed(2)}% vs mois dernier`,
       icon: <ArrowDown size={16} />,
       color: "text-red-500",
     },
