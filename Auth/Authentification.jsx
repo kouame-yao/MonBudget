@@ -7,7 +7,14 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { useRouter } from "next/router";
 import { toast } from "sonner";
 import { auth, db } from "../database/firebase/auth";
@@ -17,6 +24,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [Get_transactions, setTransaction] = useState([]);
   const router = useRouter();
 
   // Surveille l'état de connexion Firebase
@@ -67,9 +75,104 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     toast.success("Vous êtes déconnecter !");
   };
+  // Get transaction
+
+  useEffect(() => {
+    if (loading || !user?.uid) return;
+    const colRef = collection(db, "users", user.uid, "transactions");
+    const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
+      const table = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const montant =
+          typeof data.Montant === "string"
+            ? parseFloat(data.Montant)
+            : data.Montant;
+        table.push({ id: doc.id, ...data, Montant: montant || 0 });
+      });
+      setTransaction(table);
+    });
+    return () => unsubscribe();
+  }, [loading, user?.uid]);
+
+  // Ajout de transaction
+  const date = new Date();
+  const formatted = date.toLocaleDateString("fr-FR", {
+    year: "numeric",
+    month: "long",
+  });
+
+  const transactions = async (data) => {
+    if (!user?.uid) {
+      toast.error("Utilisateur non connecté !");
+      return;
+    }
+
+    try {
+      const usercRef = doc(collection(db, "users", user?.uid, "transactions"));
+      await setDoc(usercRef, data);
+      toast.success(`${data.Type} ajouter avec succès`);
+    } catch (e) {
+      toast.error(`Error adding document: ${e.message}`);
+    } finally {
+    }
+  };
+
+  // Modifier transaction
+
+  const Edited_editeElement = async (data, idItems) => {
+    if (!user?.uid) {
+      toast.error("uid Manquant");
+      return;
+    }
+    try {
+      const washingtonRef = doc(
+        db,
+        "users",
+        user?.uid,
+        "transactions",
+        idItems
+      );
+
+      // Set the "capital" field of the city 'DC'
+      await updateDoc(washingtonRef, data);
+
+      toast.success("Modification reussi");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  // Supprimer transaction
+
+  const supprimerDonner = async (id) => {
+    if (!user?.uid) {
+      toast.error("uid Manquant");
+      return;
+    }
+    try {
+      const washingtonRef = doc(db, "users", user?.uid, "transactions", id);
+
+      await deleteDoc(washingtonRef);
+      toast.success("Suppression reussi");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, loading, connectGoogle, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        connectGoogle,
+        logout,
+        transactions,
+        Get_transactions,
+        Edited_editeElement,
+        supprimerDonner,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

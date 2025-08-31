@@ -19,10 +19,9 @@ import { db } from "../../../database/firebase/auth";
 import { useAuth } from "../../../Auth/Authentification";
 
 export default function Transactions_recentes() {
-  const { user, loading } = useAuth();
-  const uid = user?.uid;
+  const { Get_transactions } = useAuth();
+
   const router = useRouter();
-  const [transactions, setTransaction] = useState([]);
 
   const categoriesWithIcons = [
     {
@@ -62,16 +61,6 @@ export default function Transactions_recentes() {
     },
   ];
 
-  useEffect(() => {
-    if (!uid || loading) return;
-    const colRef = collection(db, "users", uid, "transactions");
-    const unsubscribe = onSnapshot(colRef, (snapshot) => {
-      const table = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setTransaction(table);
-    });
-    return () => unsubscribe();
-  }, [uid, loading]);
-
   return (
     <div className="bg-white border border-gray-200 shadow-md rounded-2xl p-4 sm:p-6 md:p-8 w-full">
       <div className="flex justify-between items-center mb-4">
@@ -87,7 +76,7 @@ export default function Transactions_recentes() {
       </div>
 
       <div className="flex flex-col gap-2 sm:gap-3 md:gap-4 border-b border-gray-200 pb-2 sm:pb-3 md:pb-4">
-        {transactions?.slice(0, 6)?.map((items, index) => {
+        {Get_transactions?.slice(0, 6)?.map((items, index) => {
           const categoryInfo = categoriesWithIcons.find(
             (cat) => cat.value === items.Categorie
           ) || {

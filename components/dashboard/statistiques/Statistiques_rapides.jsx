@@ -4,32 +4,7 @@ import { useAuth } from "../../../Auth/Authentification";
 import { db } from "../../../database/firebase/auth";
 
 export default function Statistiques_rapides() {
-  const { user, connectGoogle, logout, loading } = useAuth();
-
-  const [transactions, setTransaction] = useState([]);
-  const date = new Date();
-  const options = { year: "numeric", month: "long" };
-  const formatted = date.toLocaleDateString("fr-FR", options);
-
-  useEffect(() => {
-    if (loading) return;
-    if (!user) return;
-    const colRef = collection(db, "users", user?.uid, "transactions");
-    const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
-      const table = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const montant =
-          typeof data.Montant === "string"
-            ? parseFloat(data.Montant)
-            : data.Montant;
-        table.push({ id: doc.id, ...data, Montant: montant || 0 });
-      });
-      setTransaction(table);
-    });
-
-    return () => unsubscribe();
-  }, [formatted, user?.uid]);
+  const { Get_transactions } = useAuth();
 
   const TypeTransactio = (data) => {
     const compte = { Dépense: [], Revenu: [] };
@@ -41,7 +16,7 @@ export default function Statistiques_rapides() {
     return compte;
   };
 
-  const TypeTrans = TypeTransactio(transactions);
+  const TypeTrans = TypeTransactio(Get_transactions);
 
   const CalculeTotal = (data) => {
     if (!data || data.length === 0) return 0;

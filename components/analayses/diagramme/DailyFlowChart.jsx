@@ -1,5 +1,4 @@
-import { collection, onSnapshot } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -10,46 +9,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { db } from "../../../database/firebase/auth";
 import { useAuth } from "../../../Auth/Authentification";
 
 export default function DailyFlowChart() {
-  const { user } = useAuth();
-  const [transactions, setTransaction] = useState([]);
-  const [isClient, setIsClient] = useState(false);
+  const { Get_transactions, loading } = useAuth();
+
   const date = new Date();
-  const formatted = date.toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "long",
-  });
 
-  useEffect(() => setIsClient(true), []);
-
-  useEffect(() => {
-    if (!isClient || !user?.uid) return;
-    const colRef = collection(db, "users", user?.uid, "transactions");
-    const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
-      const table = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        table.push({
-          id: doc.id,
-          ...data,
-          Montant:
-            typeof data.Montant === "string"
-              ? parseFloat(data.Montant)
-              : data.Montant,
-          Date_at: data.Date_at?.toDate
-            ? data.Date_at.toDate()
-            : new Date(data.Date_at),
-        });
-      });
-      setTransaction(table);
-    });
-    return () => unsubscribe();
-  }, [formatted, isClient, user?.uid]);
-
-  if (!isClient) {
+  if (loading) {
     return (
       <div className="bg-white shadow rounded-xl p-3 w-full animate-pulse">
         <div className="h-5 bg-gray-200 rounded w-3/4 mb-1"></div>
@@ -68,7 +35,7 @@ export default function DailyFlowChart() {
     return compte;
   };
 
-  const TypeTrans = groupByType(transactions);
+  const TypeTrans = groupByType(Get_transactions);
 
   const transformDataForChart = (TypeTrans) => {
     const dailyData = {};
@@ -80,10 +47,15 @@ export default function DailyFlowChart() {
     for (let day = 1; day <= daysInMonth; day++)
       dailyData[day] = { day, revenus: 0, depenses: 0 };
     TypeTrans.Dépense?.forEach((t) => {
-      dailyData[t.Date_at.getDate()].depenses += t.Montant || 0;
+      const day =
+        t.Date_at?.toDate?.()?.getDate() || new Date(t.Date_at).getDate();
+      dailyData[day].depenses += t.Montant || 0;
     });
+
     TypeTrans.Revenu?.forEach((t) => {
-      dailyData[t.Date_at.getDate()].revenus += t.Montant || 0;
+      const day =
+        t.Date_at?.toDate?.()?.getDate() || new Date(t.Date_at).getDate();
+      dailyData[day].revenus += t.Montant || 0;
     });
     return Object.values(dailyData).sort((a, b) => a.day - b.day);
   };

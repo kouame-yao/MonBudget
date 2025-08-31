@@ -5,28 +5,9 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../Auth/Authentification";
 
 export default function CategoryPieChart() {
-  const { user } = useAuth();
-  const [transactions, setTransaction] = useState([]);
-  const [isClient, setIsClient] = useState(false);
+  const { Get_transactions, loading } = useAuth();
 
-  const date = new Date();
-  const options = { year: "numeric", month: "long" };
-  const formatted = date.toLocaleDateString("fr-FR", options);
-
-  useEffect(() => setIsClient(true), []);
-
-  useEffect(() => {
-    if (!isClient || !user?.uid) return;
-    const colRef = collection(db, "users", user?.uid, "transactions");
-    const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
-      const table = [];
-      querySnapshot.forEach((doc) => table.push({ id: doc.id, ...doc.data() }));
-      setTransaction(table);
-    });
-    return () => unsubscribe();
-  }, [formatted, isClient, user?.uid]);
-
-  if (!isClient) {
+  if (loading) {
     return (
       <div className="bg-white shadow rounded-xl p-3 w-full animate-pulse">
         <div className="h-5 bg-gray-200 rounded w-3/4 mb-1"></div>
@@ -55,7 +36,7 @@ export default function CategoryPieChart() {
     return compte;
   };
 
-  const TypeTrans = groupByType(transactions);
+  const TypeTrans = groupByType(Get_transactions);
 
   const transformCategoriesData = (depenses) => {
     const categories = {};

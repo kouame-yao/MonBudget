@@ -12,36 +12,14 @@ import { db } from "../../../database/firebase/auth";
 import { useAuth } from "../../../Auth/Authentification";
 
 function Analayse_taux() {
-  const { user, loading } = useAuth();
+  const { loading, Get_transactions } = useAuth();
   const [transactions, setTransaction] = useState([]);
   const [isClient, setIsClient] = useState(false);
   const date = new Date();
   const options = { year: "numeric", month: "long" };
   const formatted = date.toLocaleDateString("fr-FR", options);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if ((!isClient, !user?.uid)) return;
-    const colRef = collection(db, "users", user?.uid, "transactions");
-    const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
-      const table = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const montant =
-          typeof data.Montant === "string"
-            ? parseFloat(data.Montant)
-            : data.Montant;
-        table.push({ id: doc.id, ...data, Montant: montant || 0 });
-      });
-      setTransaction(table);
-    });
-    return () => unsubscribe();
-  }, [formatted, isClient, user?.uid]);
-
-  if (!isClient) {
+  if (loading) {
     return (
       <div className="flex gap-4 items-center">
         {[1, 2, 3, 4].map((i) => (
@@ -68,7 +46,7 @@ function Analayse_taux() {
     return compte;
   };
 
-  const TypeTrans = groupByType(transactions);
+  const TypeTrans = groupByType(Get_transactions);
 
   const sommeMontants = (data) => {
     if (!data || data.length === 0) return 0;

@@ -1,36 +1,14 @@
-import { collection, onSnapshot } from "firebase/firestore";
 import { ArrowBigDown, ArrowBigUp, Calendar, WalletIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useAuth } from "../../../Auth/Authentification";
-import { db } from "../../../database/firebase/auth";
 
 export default function Donne_mensuelle() {
-  const { user, loading } = useAuth();
-  const [transactions, setTransaction] = useState([]);
+  const { Get_transactions } = useAuth();
 
   const date = new Date();
   const formatted = date.toLocaleDateString("fr-FR", {
     year: "numeric",
     month: "long",
   });
-
-  useEffect(() => {
-    if (loading || !user?.uid) return;
-    const colRef = collection(db, "users", user.uid, "transactions");
-    const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
-      const table = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const montant =
-          typeof data.Montant === "string"
-            ? parseFloat(data.Montant)
-            : data.Montant;
-        table.push({ id: doc.id, ...data, Montant: montant || 0 });
-      });
-      setTransaction(table);
-    });
-    return () => unsubscribe();
-  }, [loading, user?.uid]);
 
   const TypeTransactio = (data) => {
     const compte = { Dépense: [], Revenu: [] };
@@ -41,7 +19,7 @@ export default function Donne_mensuelle() {
     return compte;
   };
 
-  const TypeTrans = TypeTransactio(transactions);
+  const TypeTrans = TypeTransactio(Get_transactions);
   const CalculeTotal = (data) =>
     data && data.length > 0
       ? data.reduce((acc, el) => acc + (el.Montant || 0), 0)

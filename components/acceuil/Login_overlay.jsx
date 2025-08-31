@@ -1,11 +1,9 @@
 import { Wallet } from "lucide-react";
 
 import { useAuth } from "../../Auth/Authentification";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
 
 function Login_overlay({ Close }) {
-  const { user, connectGoogle, logout } = useAuth();
+  const { connectGoogle } = useAuth();
 
   return (
     <div className="fixed px-2 w-screen flex flex-col justify-center items-center h-screen z-10 top-0 right-0 bg-black/50">

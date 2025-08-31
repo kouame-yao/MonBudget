@@ -13,7 +13,7 @@ import { useAuth } from "../Auth/Authentification";
 import Login_overlay from "../components/acceuil/Login_overlay";
 
 function Wrapper({ children }) {
-  const { user, connectGoogle, logout, loading } = useAuth();
+  const { user, logout, loading } = useAuth();
   const router = useRouter();
   useEffect(() => {
     if (!loading && !user && router.pathname !== "/") router.push("/");

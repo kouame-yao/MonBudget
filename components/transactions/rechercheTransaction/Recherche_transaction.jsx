@@ -1,11 +1,4 @@
-import {
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  Timestamp,
-  updateDoc,
-} from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import {
   ArrowDown,
   ArrowUp,
@@ -30,13 +23,11 @@ import {
   Utensils,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { useAuth } from "../../../Auth/Authentification";
-import { db } from "../../../database/firebase/auth";
 import { toast } from "sonner";
+import { useAuth } from "../../../Auth/Authentification";
 function Recherche_transaction() {
-  const { user, connectGoogle, logout, loading } = useAuth();
-  const uid = user?.uid;
-  const [transactions, setTransaction] = useState([]);
+  const { Get_transactions, Edited_editeElement, supprimerDonner } = useAuth();
+
   const [element, setElement] = useState(null);
   const [toggle, setToggle] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -191,53 +182,30 @@ function Recherche_transaction() {
     },
   ];
 
-  const date = new Date(); // par exemple : 2025-08-24
-  const options = { year: "numeric", month: "long" };
-  const formatted = date.toLocaleDateString("fr-FR", options);
-  useEffect(() => {
-    if (loading) return;
-    if (!user) return;
-    const colRef = collection(db, "users", uid, "transactions");
-
-    // écoute en temps réel
-    const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
-      const table = [];
-      querySnapshot.forEach((doc) => {
-        table.push({ id: doc.id, ...doc.data() });
-      });
-      setTransaction(table);
-    });
-
-    // nettoyage à la désactivation du composant
-    return () => unsubscribe();
-  }, [formatted, uid]);
-
   // filtrage
-  const transactionFilter = transactions
-    ?.filter((t) => {
-      const d = new Date(t.Date_at.seconds * 1000);
-      const mois = d.getMonth() + 1;
-      const trimestre = Math.ceil(mois / 3);
-      const annee = d.getFullYear();
+  const transactionFilter = Get_transactions?.filter((t) => {
+    const d = new Date(t.Date_at.seconds * 1000);
+    const mois = d.getMonth() + 1;
+    const trimestre = Math.ceil(mois / 3);
+    const annee = d.getFullYear();
 
-      const matchPeriode =
-        !filter.periode ||
-        filter.periode.toString() === mois.toString() ||
-        filter.periode.toString() === trimestre.toString() ||
-        filter.periode.toString() === annee.toString();
+    const matchPeriode =
+      !filter.periode ||
+      filter.periode.toString() === mois.toString() ||
+      filter.periode.toString() === trimestre.toString() ||
+      filter.periode.toString() === annee.toString();
 
-      const matchType =
-        !filter.Type || filter.Type.toString() === t.Type.toString();
-      const matchCategorie =
-        !InputSelectFilter.select ||
-        InputSelectFilter.select.toString() === t.Categorie.toString();
-      return matchPeriode && matchType && matchCategorie;
-    })
-    .filter((doc) => {
-      const seactText = InputSelectFilter.input.toLowerCase();
-      const field = [doc.Categorie, doc.Type, doc.Description];
-      return field.some((t) => t.toLowerCase().includes(seactText));
-    });
+    const matchType =
+      !filter.Type || filter.Type.toString() === t.Type.toString();
+    const matchCategorie =
+      !InputSelectFilter.select ||
+      InputSelectFilter.select.toString() === t.Categorie.toString();
+    return matchPeriode && matchType && matchCategorie;
+  }).filter((doc) => {
+    const seactText = InputSelectFilter.input.toLowerCase();
+    const field = [doc.Categorie, doc.Type, doc.Description];
+    return field.some((t) => t.toLowerCase().includes(seactText));
+  });
 
   // Paginations
   const itemsPerPage = 7;
@@ -297,6 +265,14 @@ function Recherche_transaction() {
     const newDate = new Date(dateStr); // UTC 00:00:00
     const timestamp = Timestamp.fromDate(newDate);
     setLoading(true);
+
+    const data = {
+      Montant: inputValue.montant,
+      Description: inputValue.description,
+      Categorie: inputValue.categorie,
+      Type: togglebtn,
+      Date_at: timestamp,
+    };
     if (
       !togglebtn ||
       !inputValue.montant ||
@@ -308,40 +284,14 @@ function Recherche_transaction() {
 
       return;
     }
-    try {
-      const washingtonRef = doc(db, "users", uid, "transactions", idItems);
-
-      // Set the "capital" field of the city 'DC'
-      await updateDoc(washingtonRef, {
-        Montant: inputValue.montant,
-        Description: inputValue.description,
-        Categorie: inputValue.categorie,
-        Type: togglebtn,
-        Date_at: timestamp,
-      });
-      setLoading(false);
-      toast.success("Modification reussi");
-    } catch (error) {
-      toast.error(error.error);
-
-      setLoading(false);
-    }
+    await Edited_editeElement(data, idItems);
+    setLoading(false);
   };
 
   // useEffect(() => {
   //   editeElement();
   // }, []);
 
-  const supprimerDonner = async (id) => {
-    try {
-      const washingtonRef = doc(db, "users", uid, "transactions", id);
-
-      await deleteDoc(washingtonRef);
-      toast.success("Suppression reussi");
-    } catch (error) {
-      toast.error(error.error);
-    }
-  };
   return (
     <main className=" w-full">
       <div className="flex flex-col md:flex-row gap-4 mb-10">

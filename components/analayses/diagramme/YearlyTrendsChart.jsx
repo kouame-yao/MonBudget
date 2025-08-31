@@ -1,4 +1,3 @@
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
   Bar,
@@ -12,67 +11,61 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { db } from "../../../database/firebase/auth";
 import { useAuth } from "../../../Auth/Authentification";
 
 export default function YearlyTrendsChart() {
-  const { user } = useAuth();
-  const [transactions, setTransactions] = useState([]);
+  const { Get_transactions, loading } = useAuth();
   const [monthlyData, setMonthlyData] = useState([]);
   const [savingRate, setSavingRate] = useState([]);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => setIsClient(true), []);
 
   useEffect(() => {
-    if (!isClient || !user?.uid) return;
-    const colRef = collection(db, "users", user.uid, "transactions");
-    const q = query(colRef, orderBy("Date_at", "asc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setTransactions(
-        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      );
-    });
-    return () => unsubscribe();
-  }, [isClient, user?.uid]);
+    if (!Get_transactions || Get_transactions.length === 0) return;
 
-  useEffect(() => {
-    if (transactions.length === 0) return;
+    const currentYear = new Date().getFullYear();
     const monthlyMap = {};
-    transactions.forEach((t) => {
+
+    // Parcours des transactions et filtrage sur l'année en cours
+    Get_transactions.forEach((t) => {
       const date = t.Date_at?.toDate ? t.Date_at.toDate() : new Date(t.Date_at);
+      if (date.getFullYear() !== currentYear) return; // ignore les autres années
+
       const monthYear = date.toLocaleDateString("fr-FR", {
         month: "short",
         year: "numeric",
       });
+
       if (!monthlyMap[monthYear])
         monthlyMap[monthYear] = { revenus: 0, depenses: 0 };
+
       const montant =
         typeof t.Montant === "string" ? parseFloat(t.Montant) : t.Montant;
+
       if (t.Type === "Revenu") monthlyMap[monthYear].revenus += montant;
       else if (t.Type === "Dépense") monthlyMap[monthYear].depenses += montant;
     });
 
+    // Mois de l'année courante
     const monthsOrder = [
-      "janv. 2025",
-      "févr. 2025",
-      "mars 2025",
-      "avr. 2025",
-      "mai 2025",
-      "juin 2025",
-      "juil. 2025",
-      "août 2025",
-      "sept. 2025",
-      "oct. 2025",
-      "nov. 2025",
-      "déc. 2025",
-    ];
+      "janv.",
+      "févr.",
+      "mars",
+      "avr.",
+      "mai",
+      "juin",
+      "juil.",
+      "août",
+      "sept.",
+      "oct.",
+      "nov.",
+      "déc.",
+    ].map((m) => `${m} ${currentYear}`);
 
+    // Création du tableau pour Recharts
     const data = monthsOrder.map((month) => {
       const { revenus = 0, depenses = 0 } = monthlyMap[month] || {};
       const epargne = revenus - depenses;
       return {
-        month: month.replace("2025", "").replace(".", ""),
+        month: month.replace(`${currentYear}`, "").replace(".", ""),
         revenus,
         depenses,
         epargne: epargne > 0 ? epargne : 0,
@@ -86,7 +79,7 @@ export default function YearlyTrendsChart() {
         taux: d.revenus > 0 ? Math.round((d.epargne / d.revenus) * 100) : 0,
       }))
     );
-  }, [transactions]);
+  }, [Get_transactions]);
 
   const totalEpargne = monthlyData.reduce((sum, m) => sum + m.epargne, 0);
   const avgTaux =
@@ -94,13 +87,20 @@ export default function YearlyTrendsChart() {
       (sum, m) => sum + (m.revenus > 0 ? (m.epargne / m.revenus) * 100 : 0),
       0
     ) / monthlyData.length || 0;
-  const improvement = 15; // valeur fixe
 
-  if (!isClient || monthlyData.length === 0)
-    return <div>Chargement des données...</div>;
+  const improvement = 15; // valeur fixe ou calculable selon tes besoins
+
+  if (loading || monthlyData.length === 0)
+    return (
+      <div className="bg-white shadow rounded-xl p-3 w-full animate-pulse">
+        <div className="h-5 bg-gray-200 rounded w-3/4 mb-1"></div>
+        <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
+        <div className="h-60 bg-gray-200 rounded"></div>
+      </div>
+    );
 
   return (
-    <div className="bg-white shadow rounded-xl p-3">
+    <div className="bg-white shadow rounded-xl p-3 w-full">
       <h2 className="text-xl font-semibold">Tendances annuelles</h2>
       <p className="text-sm text-gray-500 mb-2">
         Évolution de vos finances sur 12 mois

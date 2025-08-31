@@ -1,13 +1,11 @@
 import { collection, doc, setDoc } from "firebase/firestore";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "../../../Auth/Authentification";
-import { db } from "../../../database/firebase/auth";
 import { toast } from "sonner";
+import { useAuth } from "../../../Auth/Authentification";
 
 export default function Ajout_rapide() {
-  const { user } = useAuth();
-  const uid = user?.uid;
+  const { transactions } = useAuth();
   const [togglebtn, setTogglebtn] = useState("Dépense");
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState({
@@ -46,7 +44,8 @@ export default function Ajout_rapide() {
     setInputValue((prev) => ({ ...prev, [name]: value }));
   };
 
-  const transaction = async () => {
+  const newTransactions = async () => {
+    setLoading(true);
     if (
       !togglebtn ||
       !inputValue.montant ||
@@ -54,29 +53,20 @@ export default function Ajout_rapide() {
       !inputValue.categorie
     ) {
       toast.error("Des champs sont manquants !");
+      setLoading(false);
       return;
     }
-
-    setLoading(true);
-    try {
-      const usercRef = doc(collection(db, "users", uid, "transactions"));
-      await setDoc(usercRef, {
-        Type: togglebtn,
-        Montant: Number(inputValue.montant),
-        Description: inputValue.description,
-        Categorie: inputValue.categorie,
-        Date_at: new Date(),
-        Mois: formatted,
-      });
-      toast.success(`${togglebtn} ajouter avec succès`);
-      setInputValue({ montant: "", description: "", categorie: "" });
-    } catch (e) {
-      toast.error("Error adding document: ", e.message);
-    } finally {
-      setLoading(false);
-    }
+    await transactions({
+      Type: togglebtn,
+      Montant: Number(inputValue.montant),
+      Description: inputValue.description,
+      Categorie: inputValue.categorie,
+      Date_at: new Date(),
+      Mois: formatted,
+    });
+    setInputValue({ montant: "", description: "", categorie: "" });
+    setLoading(false);
   };
-
   return (
     <div className="w-full max-w-md md:max-w-2xl mx-auto ">
       <div className="bg-white p-4 md:p-6 flex flex-col gap-4 md:gap-6 shadow-md rounded-2xl border border-gray-200">
@@ -140,7 +130,7 @@ export default function Ajout_rapide() {
         </div>
 
         <button
-          onClick={transaction}
+          onClick={newTransactions}
           className={`w-full py-3 md:py-4 rounded-lg font-semibold text-white transition ${
             togglebtn === "Dépense"
               ? "bg-red-500 hover:bg-red-600"

@@ -1,31 +1,9 @@
-import { collection, onSnapshot } from "firebase/firestore";
 import { ArrowDown, ArrowUp, Database, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
-import { db } from "../../../database/firebase/auth";
+
 import { useAuth } from "../../../Auth/Authentification";
 
 export default function Vue_Transactions() {
-  const { user, loading } = useAuth();
-  const uid = user?.uid;
-  const [transactions, setTransaction] = useState([]);
-
-  useEffect(() => {
-    if (loading || !uid) return;
-    const colRef = collection(db, "users", uid, "transactions");
-    const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
-      const table = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const montant =
-          typeof data.Montant === "string"
-            ? parseFloat(data.Montant)
-            : data.Montant;
-        table.push({ id: doc.id, ...data, Montant: montant || 0 });
-      });
-      setTransaction(table);
-    });
-    return () => unsubscribe();
-  }, [loading, uid]);
+  const { Get_transactions } = useAuth();
 
   const TypeTransactio = (data) => {
     const compte = { Dépense: [], Revenu: [] };
@@ -36,7 +14,7 @@ export default function Vue_Transactions() {
     return compte;
   };
 
-  const TypeTrans = TypeTransactio(transactions);
+  const TypeTrans = TypeTransactio(Get_transactions);
   const CalculeTotal = (data) =>
     data?.length ? data.reduce((acc, el) => acc + (el.Montant || 0), 0) : 0;
 
