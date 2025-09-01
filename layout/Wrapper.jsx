@@ -134,11 +134,11 @@ function Wrapper({ children }) {
           ref={divRef}
           className="absolute top-16 right-4 bg-white border border-gray-100 rounded-2xl shadow-2xl z-10 w-72"
         >
-          <div className="border-b p-4 flex flex-col gap-1">
+          <div className="border-b border-gray-200 py-2 px-3 flex flex-col gap-1">
             <span className="font-semibold">{user?.displayName}</span>
             <span className="text-gray-400 text-sm">{user?.email}</span>
           </div>
-          <div className="border-b text-gray-500 flex flex-col gap-2 p-4">
+          <div className="border-b border-gray-200 text-gray-500 flex flex-col gap-2 ">
             <span
               onClick={() => router.push("/parametre")}
               className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
@@ -151,7 +151,7 @@ function Wrapper({ children }) {
           </div>
           <div
             onClick={() => logout()}
-            className="flex items-center gap-2 p-2 cursor-pointer text-red-500 hover:text-white hover:bg-red-500 rounded"
+            className="flex items-center gap-2 p-2 cursor-pointer text-red-500 hover:text-white hover:bg-red-300 rounded mt-1  rounded-b-2xl"
           >
             <LogOut /> Déconnexion
           </div>
