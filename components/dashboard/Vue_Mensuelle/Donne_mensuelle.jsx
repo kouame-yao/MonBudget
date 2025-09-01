@@ -28,15 +28,82 @@ export default function Donne_mensuelle() {
   const Depense = CalculeTotal(TypeTrans.Dépense);
   const Revenu = CalculeTotal(TypeTrans.Revenu);
   const SoldeActuelle = Revenu - Depense;
-  const TauxEparge =
-    Revenu > 0 ? Math.round((SoldeActuelle / Revenu) * 100) : 0;
 
+  const calculateMonthlyEvolution = (transactions) => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const currentYear = now.getFullYear();
+    const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+    let revenusActuels = 0;
+    let revenusPrecedents = 0;
+    let depensesActuelles = 0;
+    let depensesPrecedentes = 0;
+
+    transactions.forEach((t) => {
+      const d = t.Date_at?.seconds
+        ? new Date(t.Date_at.seconds * 1000)
+        : new Date(t.Date_at);
+
+      if (t.Type === "Revenu") {
+        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+          revenusActuels += t.Montant || 0;
+        } else if (
+          d.getMonth() === previousMonth &&
+          d.getFullYear() === previousYear
+        ) {
+          revenusPrecedents += t.Montant || 0;
+        }
+      } else if (t.Type === "Dépense") {
+        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+          depensesActuelles += t.Montant || 0;
+        } else if (
+          d.getMonth() === previousMonth &&
+          d.getFullYear() === previousYear
+        ) {
+          depensesPrecedentes += t.Montant || 0;
+        }
+      }
+    });
+
+    const evolutionRevenus =
+      revenusPrecedents === 0
+        ? revenusActuels > 0
+          ? 100
+          : 0
+        : ((revenusActuels - revenusPrecedents) / revenusPrecedents) * 100;
+
+    const evolutionDepenses =
+      depensesPrecedentes === 0
+        ? depensesActuelles > 0
+          ? 100
+          : 0
+        : ((depensesActuelles - depensesPrecedentes) / depensesPrecedentes) *
+          100;
+
+    return {
+      revenus: {
+        actuels: revenusActuels,
+        precedents: revenusPrecedents,
+        evolution: evolutionRevenus,
+      },
+      depenses: {
+        actuelles: depensesActuelles,
+        precedentes: depensesPrecedentes,
+        evolution: evolutionDepenses,
+      },
+    };
+  };
+  const resultats = calculateMonthlyEvolution(Get_transactions);
+  const soldeNet = resultats.revenus.actuels - resultats.depenses.actuelles;
+  const TauxEparge =
+    resultats.revenus.actuels > 0
+      ? Math.round((soldeNet / resultats.revenus.actuels) * 100)
+      : 0;
   const difDonner = [
     {
-      somme:
-        SoldeActuelle >= 0
-          ? `+ ${SoldeActuelle.toFixed(2)} Fr`
-          : `- ${Math.abs(SoldeActuelle).toFixed(2)} Fr`,
+      somme: soldeNet >= 0 ? ` +${soldeNet} Fr` : ` ${soldeNet} Fr`,
       text: "Solde actuel",
       icon: <WalletIcon size={20} />,
       bgdiv: "bg-blue-100",
@@ -44,15 +111,35 @@ export default function Donne_mensuelle() {
       textcolor: SoldeActuelle >= 0 ? "text-blue-500" : "text-red-500",
     },
     {
-      somme: Revenu > 0 ? `+ ${Revenu.toFixed(2)} Fr` : "Aucun revenu",
+      somme:
+        resultats.revenus.actuels > resultats.revenus.precedents
+          ? `${resultats.revenus.actuels} Fr`
+          : `${resultats.revenus.actuels} Fr`,
       text: "Revenus ce mois",
-      icon: <ArrowBigUp size={20} />,
-      bgdiv: "bg-green-100",
-      bgicon: "bg-green-300",
-      textcolor: "text-green-500",
+      icon:
+        resultats.revenus.actuels > resultats.revenus.precedents ? (
+          <ArrowBigUp size={20} />
+        ) : (
+          <ArrowBigDown size={20} />
+        ),
+      bgdiv:
+        resultats.revenus.actuels > resultats.revenus.precedents
+          ? "bg-green-100"
+          : "bg-red-100",
+      bgicon:
+        resultats.revenus.actuels > resultats.revenus.precedents
+          ? "bg-green-300"
+          : "bg-red-300",
+      textcolor:
+        resultats.revenus.actuels > resultats.revenus.precedents
+          ? "text-green-500"
+          : "text-red-500",
     },
     {
-      somme: Depense > 0 ? `- ${Depense.toFixed(2)} Fr` : "Aucune dépense",
+      somme:
+        resultats.depenses.actuelles < resultats.depenses.precedentes
+          ? `- ${resultats.depenses.actuelles} Fr`
+          : `+ ${resultats.depenses.actuelles} Fr`,
       text: "Dépenses ce mois",
       icon: <ArrowBigDown size={20} />,
       bgdiv: "bg-red-100",
@@ -111,7 +198,7 @@ export default function Donne_mensuelle() {
                 SoldeActuelle >= 0 ? "text-green-500" : "text-red-500"
               }`}
             >
-              {SoldeActuelle.toFixed(2)} €
+              {soldeNet} €
             </span>
             <span className="text-xs sm:text-sm md:text-base font-light text-green-500">
               Taux d'épargne: {TauxEparge}%

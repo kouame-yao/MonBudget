@@ -49,13 +49,17 @@ export default function DailyFlowChart() {
     TypeTrans.Dépense?.forEach((t) => {
       const day =
         t.Date_at?.toDate?.()?.getDate() || new Date(t.Date_at).getDate();
-      dailyData[day].depenses += t.Montant || 0;
+      if (dailyData[day]) {
+        dailyData[day].depenses += Number(t.Montant) || 0;
+      }
     });
 
     TypeTrans.Revenu?.forEach((t) => {
       const day =
         t.Date_at?.toDate?.()?.getDate() || new Date(t.Date_at).getDate();
-      dailyData[day].revenus += t.Montant || 0;
+      if (dailyData[day]) {
+        dailyData[day].revenus += Number(t.Montant) || 0;
+      }
     });
     return Object.values(dailyData).sort((a, b) => a.day - b.day);
   };

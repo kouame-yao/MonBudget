@@ -91,42 +91,66 @@ export default function Vue_Transactions() {
     };
   };
   const resultats = calculateMonthlyEvolution(Get_transactions);
+  const soldeNet = resultats.revenus.actuels - resultats.depenses.actuelles;
   const Statique = [
     {
       name: "Total",
       solde:
         SoldeActuelle >= 0
-          ? `+ ${SoldeActuelle.toFixed(2)} Fr`
-          : `- ${Math.abs(SoldeActuelle).toFixed(2)} Fr`,
+          ? `+ ${resultats.revenus.actuels} Fr`
+          : `- ${resultats.revenus.actuels} Fr`,
       text: "Ce mois",
       icon: <Database size={16} />,
       color: "text-blue-500",
     },
     {
       name: "Revenus",
-      solde: Revenu > 0 ? `+ ${Revenu.toFixed(2)} Fr` : "Aucun revenu",
-      text: `${resultats.revenus.evolution.toFixed(2)}% vs mois dernier`,
-      icon: <ArrowUp size={16} />,
-      color: "text-green-500",
+      solde:
+        resultats.revenus.actuels > resultats.revenus.precedents
+          ? ` ${resultats.revenus.actuels} Fr`
+          : ` ${resultats.revenus.actuels} Fr`,
+      text:
+        resultats.revenus.actuels > resultats.revenus.precedents
+          ? `+${resultats.revenus.evolution.toFixed(2)}% vs mois dernier`
+          : `${resultats.revenus.evolution.toFixed(2)}% vs mois dernier`,
+      icon:
+        resultats.revenus.actuels > resultats.revenus.precedents ? (
+          <ArrowUp size={16} />
+        ) : (
+          <ArrowDown size={16} />
+        ),
+      color:
+        resultats.revenus.actuels > resultats.revenus.precedents
+          ? "text-green-500"
+          : "text-red-500",
     },
     {
       name: "Dépenses",
-      solde: Depense > 0 ? `- ${Depense.toFixed(2)} Fr` : "Aucune dépense",
+      solde:
+        resultats.depenses.actuelles < resultats.depenses.precedentes
+          ? `- ${resultats.depenses.actuelles} Fr`
+          : `+ ${resultats.depenses.actuelles} Fr`,
       text: `${resultats.depenses.evolution.toFixed(2)}% vs mois dernier`,
-      icon: <ArrowDown size={16} />,
-      color: "text-red-500",
+      icon:
+        resultats.depenses.actuelles < resultats.depenses.precedentes ? (
+          <ArrowDown size={16} />
+        ) : (
+          <ArrowUp size={16} />
+        ),
+      color:
+        resultats.depenses.actuelles < resultats.depenses.precedentes
+          ? "text-orange-500"
+          : "text-red-500",
     },
     {
       name: "Solde net",
-      solde:
-        SoldeActuelle >= 0
-          ? `+ ${SoldeActuelle.toFixed(2)} Fr`
-          : `- ${Math.abs(SoldeActuelle).toFixed(2)} Fr`,
+      solde: soldeNet >= 0 ? `+ ${soldeNet} Fr` : `${soldeNet} Fr`,
       text: "Différence mensuelle",
       icon: <Wallet size={16} />,
       color: SoldeActuelle >= 0 ? "text-green-500" : "text-red-500",
     },
   ];
+  console.log(resultats.depenses.precedentes);
 
   return (
     <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
