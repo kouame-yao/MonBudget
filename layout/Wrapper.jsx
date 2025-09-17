@@ -60,7 +60,10 @@ function Wrapper({ children }) {
   return (
     <div>
       <header className="flex justify-between items-center px-4 md:px-12 py-4 bg-white shadow-md relative">
-        <div className="flex items-center gap-4">
+        <div
+          className="flex items-center gap-4 cursor-pointer"
+          onClick={() => router.push("/dashboard")}
+        >
           <span className="bg-blue-600 w-12 h-12 grid place-items-center text-white text-sm rounded-2xl">
             <Wallet size={30} />
           </span>
