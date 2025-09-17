@@ -1,11 +1,18 @@
-import { collection, doc, setDoc } from "firebase/firestore";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "../../../Auth/Authentification";
 
 export default function Ajout_rapide() {
-  const { transactions } = useAuth();
+  const {
+    transactions,
+    Alertes,
+    configue,
+    notifications,
+    Get_transactions,
+    devise,
+  } = useAuth();
+
   const [togglebtn, setTogglebtn] = useState("Dépense");
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState({
@@ -13,6 +20,130 @@ export default function Ajout_rapide() {
     description: "",
     categorie: "",
   });
+
+  const amountAlertes = Number(configue[0]?.alerte || 0);
+  const amountLimite = Number(configue[0]?.limite || 0);
+  const amountObjectif = Number(configue[0]?.objectif || 0);
+
+  // Transactions du jour
+  const today = new Date();
+  const todayDay = today.getDate();
+  const todayMonth = today.getMonth();
+  const todayYear = today.getFullYear();
+
+  const todayTransactions = Get_transactions?.filter((t) => {
+    const ts = t?.Date_at;
+    if (!ts?.seconds) return false;
+    const d = new Date(ts.seconds * 1000);
+    return (
+      d.getDate() === todayDay &&
+      d.getMonth() === todayMonth &&
+      d.getFullYear() === todayYear
+    );
+  });
+
+  const SommeJour = todayTransactions?.reduce((acc, el) => acc + el.Montant, 0);
+
+  // Transactions du mois courant
+  const moisActuel = today.toLocaleDateString("fr-FR", {
+    year: "numeric",
+    month: "long",
+  });
+
+  const moisTransactions = Get_transactions?.filter(
+    (t) => t.Mois === moisActuel
+  );
+
+  const TotalDepensesMois = moisTransactions
+    ?.filter((t) => t.Type === "Dépense")
+    ?.reduce((acc, el) => acc + el.Montant, 0);
+
+  const TotalRevenusMois = moisTransactions
+    ?.filter((t) => t.Type === "Revenu")
+    ?.reduce((acc, el) => acc + el.Montant, 0);
+
+  const EpargneActuelle = TotalRevenusMois - TotalDepensesMois;
+
+  // Vérifie si une alerte d'un certain type existe déjà
+  const hasNotif = (type) => notifications.some((n) => n.type === type);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInputValue((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const newTransactions = async () => {
+    setLoading(true);
+    if (
+      !togglebtn ||
+      !inputValue.montant ||
+      !inputValue.description ||
+      !inputValue.categorie
+    ) {
+      toast.error("Des champs sont manquants !");
+      setLoading(false);
+      return;
+    }
+
+    // Enregistrement de la transaction
+    await transactions({
+      Type: togglebtn,
+      Montant: Number(inputValue.montant),
+      Description: inputValue.description,
+      Categorie: inputValue.categorie,
+      Date_at: new Date(),
+      Mois: moisActuel,
+    });
+
+    setInputValue({ montant: "", description: "", categorie: "" });
+    setLoading(false);
+
+    const montantNum = Number(inputValue.montant);
+
+    // ⚠️ Seuil d'alerte individuel
+    if (montantNum > amountAlertes) {
+      await Alertes({
+        type: "alerte",
+        message: `La dépense ${inputValue.description.toUpperCase()}: ${montantNum} ${devise} dépasse votre seuil d'alerte.`,
+        createdAt: new Date(),
+        read: true,
+        category: inputValue.categorie,
+      });
+    }
+
+    // ⚠️ Total du jour dépasse seuil d’alerte
+    if (!hasNotif("alerteJour") && SommeJour + montantNum > amountAlertes) {
+      await Alertes({
+        type: "alerteJour",
+        message: `Vous avez dépensé plus que votre seuil d'alerte aujourd'hui.`,
+        createdAt: new Date(),
+        read: true,
+      });
+    }
+
+    // ⚠️ Total du mois dépasse la limite mensuelle
+    if (
+      !hasNotif("limiteMois") &&
+      TotalDepensesMois + montantNum > amountLimite
+    ) {
+      await Alertes({
+        type: "limiteMois",
+        message: `Vous avez atteint ou dépassé votre limite mensuelle de ${amountLimite} ${devise}.`,
+        createdAt: new Date(),
+        read: true,
+      });
+    }
+
+    // ⚠️ Objectif d'épargne atteint
+    if (!hasNotif("objectif") && EpargneActuelle >= amountObjectif) {
+      await Alertes({
+        type: "objectif",
+        message: `Félicitations 🎉 Vous avez atteint votre objectif d'épargne de ${amountObjectif} ${devise}.`,
+        createdAt: new Date(),
+        read: true,
+      });
+    }
+  };
 
   const Categories = {
     Dépense: [
@@ -33,40 +164,6 @@ export default function Ajout_rapide() {
     { name: "Revenu", icon: <ArrowUp />, color: "text-green-500" },
   ];
 
-  const date = new Date();
-  const formatted = date.toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "long",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setInputValue((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const newTransactions = async () => {
-    setLoading(true);
-    if (
-      !togglebtn ||
-      !inputValue.montant ||
-      !inputValue.description ||
-      !inputValue.categorie
-    ) {
-      toast.error("Des champs sont manquants !");
-      setLoading(false);
-      return;
-    }
-    await transactions({
-      Type: togglebtn,
-      Montant: Number(inputValue.montant),
-      Description: inputValue.description,
-      Categorie: inputValue.categorie,
-      Date_at: new Date(),
-      Mois: formatted,
-    });
-    setInputValue({ montant: "", description: "", categorie: "" });
-    setLoading(false);
-  };
   return (
     <div className="w-full max-w-md md:max-w-2xl mx-auto ">
       <div className="bg-white p-4 md:p-6 flex flex-col gap-4 md:gap-6 shadow-md rounded-2xl border border-gray-200">

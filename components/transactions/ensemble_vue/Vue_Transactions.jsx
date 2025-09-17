@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp, Database, Wallet } from "lucide-react";
 import { useAuth } from "../../../Auth/Authentification";
 
 export default function Vue_Transactions() {
-  const { Get_transactions,devise } = useAuth();
+  const { Get_transactions, devise } = useAuth();
 
   const TypeTransactio = (data) => {
     const compte = { Dépense: [], Revenu: [] };
@@ -144,13 +144,13 @@ export default function Vue_Transactions() {
     },
     {
       name: "Solde net",
-      solde: soldeNet >= 0 ? `+ ${soldeNet} ${devise}` : `${soldeNet} ${devise}`,
+      solde:
+        soldeNet >= 0 ? `+ ${soldeNet} ${devise}` : `${soldeNet} ${devise}`,
       text: "Différence mensuelle",
       icon: <Wallet size={16} />,
       color: SoldeActuelle >= 0 ? "text-green-500" : "text-red-500",
     },
   ];
-  console.log(resultats.depenses.precedentes);
 
   return (
     <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">

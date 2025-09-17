@@ -9,10 +9,13 @@ import {
   updateProfile,
 } from "firebase/auth";
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   onSnapshot,
+  orderBy,
+  query,
   setDoc,
   updateDoc,
 } from "firebase/firestore";
@@ -28,6 +31,7 @@ export const AuthProvider = ({ children }) => {
   const [Get_transactions, setTransaction] = useState([]);
   const [devise, Setdevise] = useState("");
   const [configue, Setconfigue] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const router = useRouter();
 
   // Surveille l'état de connexion Firebase
@@ -100,8 +104,14 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (loading || !user?.uid) return;
+
     const colRef = collection(db, "users", user.uid, "transactions");
-    const unsubscribe = onSnapshot(colRef, (querySnapshot) => {
+
+    const q = query(colRef, orderBy("Date_at", "desc"));
+    // "asc" = de l'ancien au plus récent
+    // ou "desc" = du plus récent à l'ancien
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const table = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -111,8 +121,10 @@ export const AuthProvider = ({ children }) => {
             : data.Montant;
         table.push({ id: doc.id, ...data, Montant: montant || 0 });
       });
+
       setTransaction(table);
     });
+
     return () => unsubscribe();
   }, [loading, user?.uid]);
 
@@ -213,22 +225,34 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // recupe de devise et configue
+  // RECUPERATION DES DONNER DE PARAMETTRE
   useEffect(() => {
     if (loading || !user?.uid) return;
-    onSnapshot(doc(db, "users", user?.uid), (doc) => {
-      Setdevise(doc?.data()?.devise);
-    });
-    const table = [];
-    const config = collection(db, "users", user?.uid, "BudgetSetting");
-    const unsubscribe = onSnapshot(config, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        table.push({ id: doc.id, ...doc.data() });
-      });
+
+    // Écoute en direct du champ devise
+    const unsubscribeUser = onSnapshot(
+      doc(db, "users", user.uid),
+      (docSnap) => {
+        Setdevise(docSnap?.data()?.devise);
+      }
+    );
+
+    // Écoute en direct de la collection BudgetSetting
+    const configRef = collection(db, "users", user.uid, "BudgetSetting");
+    const unsubscribeConfig = onSnapshot(configRef, (querySnapshot) => {
+      const table = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       Setconfigue(table);
-      return () => unsubscribe();
     });
-  }, [user]);
+
+    // Nettoyage correct des deux listeners
+    return () => {
+      unsubscribeUser();
+      unsubscribeConfig();
+    };
+  }, [loading, user?.uid]);
 
   const editeConfigue = async (data) => {
     if (!user?.uid) {
@@ -252,6 +276,83 @@ export const AuthProvider = ({ children }) => {
       toast.error(error.message);
     }
   };
+  //Ajout de notifications
+  const Alertes = async (data) => {
+    if (!user?.uid) {
+      toast.error("uid manquant");
+      return;
+    }
+
+    try {
+      const notifRef = collection(db, "users", user?.uid, "Notifications");
+      await addDoc(notifRef, data);
+
+      toast.success("Notification ajoutée !");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur lors de l’ajout");
+    }
+  };
+
+  // Get notifications
+  useEffect(() => {
+    if (loading || !user?.uid) return;
+    onSnapshot(doc(db, "users", user?.uid), (doc) => {
+      Setdevise(doc?.data()?.devise);
+    });
+    const table = [];
+    const config = collection(db, "users", user?.uid, "Notifications");
+    const q = query(config, orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const notifs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setNotifications(notifs);
+      return () => unsubscribe();
+    });
+  }, [user]);
+
+  // modifier les notifications
+  const Edited_notif = async (idItems) => {
+    if (!user?.uid) {
+      toast.error("uid Manquant");
+      return;
+    }
+    try {
+      const washingtonRef = doc(
+        db,
+        "users",
+        user?.uid,
+        "Notifications",
+        idItems
+      );
+
+      // Set the "capital" field of the city 'DC'
+      await updateDoc(washingtonRef, {
+        read: false,
+      });
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  // supprimer notifications
+
+  const supprimerNotif = async (id) => {
+    if (!user?.uid) {
+      toast.error("uid Manquant");
+      return;
+    }
+    try {
+      const washingtonRef = doc(db, "users", user?.uid, "Notifications", id);
+
+      await deleteDoc(washingtonRef);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <AuthContext.Provider
@@ -269,6 +370,10 @@ export const AuthProvider = ({ children }) => {
         deviseAdd,
         configue,
         editeConfigue,
+        Alertes,
+        notifications,
+        Edited_notif,
+        supprimerNotif,
       }}
     >
       {children}

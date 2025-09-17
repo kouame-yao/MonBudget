@@ -8,9 +8,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { useAuth } from "../Auth/Authentification";
 import Login_overlay from "../components/acceuil/Login_overlay";
+import NotificationBell from "../components/alertes/NotificationBell";
 
 function Wrapper({ children }) {
   const { user, logout, loading } = useAuth();
@@ -92,14 +92,15 @@ function Wrapper({ children }) {
               </div>
             );
           })}
+          <NotificationBell count={3} />
         </div>
 
         {/* Bouton menu mobile */}
-        <div
-          className="md:hidden cursor-pointer"
-          onClick={() => setMobileMenu(!mobileMenu)}
-        >
-          <Menu size={28} />
+        <div className="md:hidden cursor-pointer  flex  items-center gap-2">
+          <div onClick={() => setMobileMenu(!mobileMenu)}>
+            <Menu size={28} />
+          </div>
+          <NotificationBell count={3} />
         </div>
       </header>
 

@@ -486,13 +486,16 @@ function Recherche_transaction() {
                           setActive(!active);
                           itemsModifie(items.id);
                           setIdItems(items.id);
+                          setElement(null);
                         }}
                         className="flex text-gray-500 font-light hover:bg-gray-200 py-1 px-2 cursor-pointer items-center gap-2"
                       >
                         <Pen size={16} color="gray" /> Modifier
                       </span>
                       <span
-                        onClick={() => supprimerDonner(items.id)}
+                        onClick={() => {
+                          supprimerDonner(items.id), setElement(null);
+                        }}
                         className="flex text-red-500 hover:bg-red-200 py-1 px-2 cursor-pointer items-center gap-2"
                       >
                         <Trash size={16} color="red" /> Supprimer

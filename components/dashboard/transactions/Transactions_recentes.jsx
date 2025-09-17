@@ -19,7 +19,7 @@ import { db } from "../../../database/firebase/auth";
 import { useAuth } from "../../../Auth/Authentification";
 
 export default function Transactions_recentes() {
-  const { Get_transactions,devise } = useAuth();
+  const { Get_transactions, devise } = useAuth();
 
   const router = useRouter();
 

@@ -6,8 +6,15 @@ import Profil_Utilisateur from "../../components/parametres/Profil_Utilisateur";
 import Wrapper from "../../layout/Wrapper";
 
 export default function Parametre() {
-  const { editeDisplaynam, user, devise, deviseAdd, configue, editeConfigue } =
-    useAuth();
+  const {
+    Get_transactions,
+    editeDisplaynam,
+    user,
+    devise,
+    deviseAdd,
+    configue,
+    editeConfigue,
+  } = useAuth();
 
   const [input, setInput] = useState({
     nom: "",
