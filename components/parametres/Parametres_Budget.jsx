@@ -1,6 +1,8 @@
 import { BadgeEuro } from "lucide-react";
+import { useAuth } from "../../Auth/Authentification";
 
 function Parametres_Budget({ formatConfigue, handleConfigue }) {
+  const { devise } = useAuth();
   return (
     <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-lg w-full p-8 flex flex-col gap-8 ">
       <div className="flex gap-4 items-center ">
@@ -19,39 +21,45 @@ function Parametres_Budget({ formatConfigue, handleConfigue }) {
         <label htmlFor="">
           <span className="text-sm text-gray-500">Limite mensuelle</span>
           <div className="flex items-center justify-end">
-            <span className="absolute mr-4 text-sm text-gray-500">€</span>
+            <span className="absolute mr-4 text-sm text-gray-500">
+              {devise}
+            </span>
             <input
               onChange={handleConfigue}
               value={formatConfigue?.limite ?? ""}
               name="limite"
               type="number"
-              className="border-2 relative outline-none p-1 rounded-lg border-gray-200 w-full px-8"
+              className="border-2 relative outline-none p-1 rounded-lg border-gray-200 w-full px-3"
             />
           </div>
         </label>
         <label htmlFor="">
           <span className="text-sm text-gray-500">Objectif d'épargne</span>
           <div className="flex items-center justify-end">
-            <span className="absolute mr-4 text-sm text-gray-500">€</span>
+            <span className="absolute mr-4 text-sm text-gray-500">
+              {devise}
+            </span>
             <input
               onChange={handleConfigue}
               value={formatConfigue?.objectif ?? ""}
               name="objectif"
               type="number"
-              className="border-2 relative outline-none p-1 rounded-lg border-gray-200 w-full px-8"
+              className="border-2 relative outline-none p-1 rounded-lg border-gray-200 w-full px-3"
             />
           </div>
         </label>
         <label htmlFor="">
           <span className="text-sm text-gray-500">Seuil d'alerte</span>
           <div className="flex items-center justify-end">
-            <span className="absolute mr-4 text-sm text-gray-500">€</span>
+            <span className="absolute mr-4 text-sm text-gray-500">
+              {devise}
+            </span>
             <input
               onChange={handleConfigue}
               value={formatConfigue?.alerte ?? ""}
               name="alerte"
               type="number"
-              className="border-2 relative outline-none p-1 rounded-lg border-gray-200 w-full px-8"
+              className="border-2 relative outline-none p-1 rounded-lg border-gray-200 w-full px-3"
             />
           </div>
         </label>
