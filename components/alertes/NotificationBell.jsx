@@ -23,7 +23,7 @@ export default function NotificationBell() {
     };
   }, []);
   return (
-    <div className="relative">
+    <div className="relative" ref={divRef}>
       {/* Cloche */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -41,10 +41,7 @@ export default function NotificationBell() {
 
       {/* Liste des notifications */}
       {isOpen && (
-        <div
-          ref={divRef}
-          className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
-        >
+        <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
           <ul className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
             {notifications.length > 0 ? (
               notifications.map((notif, i) => (
